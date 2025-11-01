@@ -90,8 +90,8 @@ def extract_chords(job_result):
     elif "annotations" in chords_json and "chords" in chords_json["annotations"]:
         chords_list = chords_json["annotations"]["chords"]
     else:
-        print("⚠️ JSON de acordes não tem a lista esperada:", chords_json)
-        return []
+        for item in chords_json:
+            print(f"Start: {item['start']} // End: {item['end']} // Acorde: {item['chord_majmin']}")
 
     # filtrar apenas objetos válidos com chord_majmin
     clean_chords = [c for c in chords_list if isinstance(c, dict) and "chord_majmin" in c]
@@ -115,7 +115,11 @@ def main(file_path, workflow_slug):
         print(" ".join(chords_majmin))
 
 
-if __name__ == "__main__":
-    arquivo = "C:/Users/duart/OneDrive/Documentos/Trilha UFPB 2025.2/Hackathon/audios/VelhaInfancia.mp3"
-    workflow_slug = "untitled-workflow-18c7355"  # seu workflow para detecção de acordes
-    main(arquivo, workflow_slug)
+def app(file):
+    if __name__ == "__main__":
+        arquivo = file
+        workflow_slug = "untitled-workflow-18c7355"  # seu workflow para detecção de acordes
+        main(arquivo, workflow_slug)
+
+
+app("C:/Users/duart/OneDrive/Documentos/Trilha UFPB 2025.2/Hackathon/audios/Samurai.mp3")
