@@ -1,8 +1,6 @@
 import streamlit as st
 import tempfile
 import os
-import sys
-# Certifique-se de que o módulo 'chord_detector' está corretamente importado
 from modulos import chord_detector
 from st_audiorec import st_audiorec
 

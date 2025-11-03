@@ -2,14 +2,12 @@ import os
 import time
 import requests
 from dotenv import load_dotenv
-from typing import Optional, Dict, List, Any
 
-# Carrega a chave de API (Certifique-se que o .env está no diretório correto)
+
 load_dotenv()
 API_KEY = os.getenv("api_key")
 if not API_KEY:
-    # Se a chave não for encontrada, retorna um erro claro
-    raise RuntimeError("Coloque sua chave no .env: api_key")
+    raise RuntimeError("Coloque sua chave no .env: MUSICAI_API_KEY")
 
 HEADERS_JSON = {
     "Authorization": API_KEY,
@@ -31,6 +29,7 @@ def get_signed_urls():
 def upload_file_to_url(upload_url, file_path):
     if file_path.lower().endswith(".mp3"):
         ct = "audio/mpeg"
+
     elif file_path.lower().endswith(".wav"):
         ct = "audio/wav"
     else:
@@ -49,6 +48,7 @@ def create_job(download_url, workflow_slug):
         "workflow": workflow_slug,
         "params": {"inputUrl": download_url}
     }
+
     resp = requests.post(url, headers=HEADERS_JSON, json=payload)
     print("POST /job →", resp.status_code)
     resp.raise_for_status()
@@ -93,51 +93,31 @@ def extract_chords(job_result):
     elif "annotations" in chords_json and "chords" in chords_json["annotations"]:
         chords_list = chords_json["annotations"]["chords"]
     else:
-        # Se for um formato diferente, tenta iterar (o print original)
         for item in chords_json:
-             if isinstance(item, dict) and 'chord_majmin' in item:
-                 chords_list.append(item)
-    
+            print(f"Start: {item['start']} // End: {item['end']} // Acorde: {item['chord_majmin']}")
     # filtrar apenas objetos válidos com chord_majmin
     clean_chords = [c for c in chords_list if isinstance(c, dict) and "chord_majmin" in c]
     return clean_chords
 
-
 def main(file_path, workflow_slug):
-    """Executa a detecção completa e retorna uma lista de acordes detectados."""
-    try:
-        upload_url, download_url = get_signed_urls()
-        upload_file_to_url(upload_url, file_path)
-        time.sleep(2) 
-        job_id = create_job(download_url, workflow_slug)
-        job_res = poll_job(job_id)
+    upload_url, download_url = get_signed_urls()
+    upload_file_to_url(upload_url, file_path)
+    time.sleep(2)  # espera o arquivo estabilizar no servidor
 
-        chords = extract_chords(job_res)
-        
-        # Se houver acordes, retorna o primeiro detectado para o modo aprendiz
-        if chords:
-            return chords[0]["chord_majmin"] 
-        else:
-            return None
+    job_id = create_job(download_url, workflow_slug)
+    job_res = poll_job(job_id)
 
-    except RuntimeError as e:
-        print(f"ERRO DE EXECUÇÃO: {e}")
-        return None # Retorna None em caso de erro
+    chords = extract_chords(job_res)
+    print("\n🎸 Acordes detectados (somente chord_majmin):")
+    if not chords:
+        print("Nenhum acorde encontrado.")
+    else:
+        # Filtrar só chord_majmin
+        chords_majmin = [c["chord_majmin"] for c in chords]
+        print(" ".join(chords_majmin))
 
-    except Exception as e:
-        print(f"ERRO INESPERADO: {e}")
-        return None
-
-
-def app(file: str) -> Optional[str]:
-    """Função wrapper para o Streamlit. Retorna o acorde detectado."""
-    # O workflow_slug precisa ser o seu identificador correto da Music.ai para detecção de acordes.
-    # Se este não for o workflow correto, você precisará alterá-lo.
-    workflow_slug = "untitled-workflow-18c7355" 
-    
-    # 💡 MUDANÇA CRUCIAL: Retorna o resultado da função main
-    return main(file, workflow_slug)
-
-
-# A chamada de teste abaixo foi removida do bloco __name__ para não interferir na importação do Streamlit
-# app("C:/Users/duart/OneDrive/Documentos/Trilha UFPB 2025.2/Hackathon/audios/Samurai.mp3")
+def app(file):
+    if __name__ == "__main__":
+        arquivo = file
+        workflow_slug = "untitled-workflow-18c7355"  # seu workflow para detecção de acordes
+        main(arquivo, workflow_slug)
