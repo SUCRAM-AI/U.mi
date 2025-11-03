@@ -106,9 +106,8 @@ def main(file_path, workflow_slug):
     job_res = poll_job(job_id)
 
     chords = extract_chords(job_res)
-    print("\n🎸 Acordes detectados (somente chord_majmin):")
     if not chords:
-        print("Nenhum acorde encontrado.")
+        print("")
     else:
         # Filtrar só chord_majmin
         chords_majmin = [c["chord_majmin"] for c in chords]
