@@ -3,121 +3,127 @@ import time
 import requests
 from dotenv import load_dotenv
 
-
 load_dotenv()
 API_KEY = os.getenv("api_key")
+
 if not API_KEY:
-    raise RuntimeError("Coloque sua chave no .env: MUSICAI_API_KEY")
+    raise RuntimeError("Coloque sua chave no .env como api_key")
 
 HEADERS_JSON = {
     "Authorization": API_KEY,
     "Content-Type": "application/json"
 }
 
-def get_signed_urls():
-    url = "https://api.music.ai/v1/upload"
-    resp = requests.get(url, headers={"Authorization": API_KEY})
-    print("GET /upload →", resp.status_code)
-    resp.raise_for_status()
-    obj = resp.json()
-    upload_url = obj.get("uploadUrl")
-    download_url = obj.get("downloadUrl")
-    if not upload_url or not download_url:
-        raise RuntimeError("uploadUrl ou downloadUrl ausentes no GET /upload: " + str(obj))
-    return upload_url, download_url
+# ===============================
+# Funções principais
+# ===============================
 
-def upload_file_to_url(upload_url, file_path):
-    if file_path.lower().endswith(".mp3"):
-        ct = "audio/mpeg"
+def upload_audio(file_path):
+    """Envia o áudio e retorna a URL pública para usar no job."""
+    print(f"📤 Enviando arquivo: {file_path}")
 
-    elif file_path.lower().endswith(".wav"):
-        ct = "audio/wav"
-    else:
-        ct = "application/octet-stream"
+    # 1️⃣ Pede a URL assinada pra upload
+    upload_url = "https://api.music.ai/v1/upload"
+    resp = requests.get(upload_url, headers=HEADERS_JSON)
+    if resp.status_code != 200:
+        raise RuntimeError(f"Erro ao obter URL de upload: {resp.text}")
 
-    headers = {"Content-Type": ct}
+    data = resp.json()
+
+    if "uploadUrl" not in data or "downloadUrl" not in data:
+        raise RuntimeError(f"Resposta inesperada da API: {data}")
+
+    # 2️⃣ Faz o upload do arquivo
     with open(file_path, "rb") as f:
-        resp = requests.put(upload_url, headers=headers, data=f)
-    print("PUT upload →", resp.status_code)
-    resp.raise_for_status()
+        put_resp = requests.put(data["uploadUrl"], data=f)
+        if put_resp.status_code not in (200, 201):
+            raise RuntimeError(f"Falha no upload: {put_resp.text}")
 
-def create_job(download_url, workflow_slug):
-    url = "https://api.music.ai/v1/job"
+    print("✅ Upload concluído com sucesso!")
+    # 3️⃣ Retorna a URL pública (downloadUrl)
+    return data["downloadUrl"]
+
+
+def create_job(audio_url, workflow_id):
+    job_url = "https://api.music.ai/v1/job"
     payload = {
-        "name": "Detect chords job",
-        "workflow": workflow_slug,
-        "params": {"inputUrl": download_url}
+        "name": "Chord Detection Job",
+        "workflow": workflow_id,
+        "params": {
+            "inputUrl": audio_url  # nome do campo deve ser inputUrl, exatamente assim!
+        }
     }
 
-    resp = requests.post(url, headers=HEADERS_JSON, json=payload)
-    print("POST /job →", resp.status_code)
-    resp.raise_for_status()
-    job_id = resp.json().get("id")
-    if not job_id:
-        raise RuntimeError("Job criado, mas sem ID: " + str(resp.json()))
-    return job_id
+    print(f"🚀 Criando job com payload:\n{payload}")
 
-def poll_job(job_id, interval=5):
-    url = f"https://api.music.ai/v1/job/{job_id}"
-    while True:
-        resp = requests.get(url, headers={"Authorization": API_KEY})
-        resp.raise_for_status()
-        job = resp.json()
-        status = job.get("status")
-        print("Status:", status)
-        if status == "SUCCEEDED":
-            return job
-        if status == "FAILED":
-            raise RuntimeError("Job falhou: " + str(job))
-        time.sleep(interval)
-
-def extract_chords(job_result):
-    res = job_result.get("result", {})
-    chords_url = res.get("chords")
-    if not chords_url:
-        print("⚠️ Nenhum URL de acordes encontrado no job.result:", res)
-        return []
+    resp = requests.post(job_url, headers=HEADERS_JSON, json=payload)
 
     try:
-        resp = requests.get(chords_url)
-        resp.raise_for_status()
-        chords_json = resp.json()
-    except Exception as e:
-        print("⚠️ Erro ao baixar ou ler o JSON de acordes:", e)
+        data = resp.json()
+    except Exception:
+        raise RuntimeError(f"Erro inesperado na resposta da API: {resp.text}")
+
+    print(f"📩 Resposta da API:\n{data}")
+
+    if resp.status_code != 200 and resp.status_code != 201:
+        raise RuntimeError(f"Erro ao criar job: {data}")
+
+    if "id" not in data:
+        raise RuntimeError(f"⚠️ Resposta inesperada da API (sem 'id'): {data}")
+
+    return data
+
+
+def get_job_status(job_id, max_wait=180, interval=3):
+    """Verifica o status do job até estar pronto (timeout de 3 minutos)"""
+    status_url = f"https://api.music.ai/v1/job/{job_id}"
+    waited = 0
+    while True:
+        resp = requests.get(status_url, headers=HEADERS_JSON).json()
+        print("DEBUG resposta status:", resp)
+        status = resp.get("status")
+        if status is None:
+            raise RuntimeError(f"Job status response inválida: {resp}")
+        if status == "SUCCEEDED" or status == "succeeded":
+            return resp
+        elif status == "FAILED" or status == "failed":
+            raise RuntimeError("❌ O job falhou.")
+        time.sleep(interval)
+        waited += interval
+        if waited >= max_wait:
+            raise RuntimeError(f"Timeout: job não completou após {max_wait} segundos (status atual: {status})")
+
+
+def extract_chords(job_data):
+    """Extrai os acordes do resultado do job."""
+    if "result" not in job_data or "chords" not in job_data["result"]:
         return []
 
-    # pegar a lista correta de objetos de acorde
-    chords_list = []
-    if "chords" in chords_json:
-        chords_list = chords_json["chords"]
-    elif "annotations" in chords_json and "chords" in chords_json["annotations"]:
-        chords_list = chords_json["annotations"]["chords"]
-    else:
-        for item in chords_json:
-            print(f"Start: {item['start']} // End: {item['end']} // Acorde: {item['chord_majmin']}")
-    # filtrar apenas objetos válidos com chord_majmin
-    clean_chords = [c for c in chords_list if isinstance(c, dict) and "chord_majmin" in c]
-    return clean_chords
+    chords_url = job_data["result"]["chords"]
+    resp = requests.get(chords_url)
+    resp.raise_for_status()
+    chords_json = resp.json()
+    chords = []
+    for c in chords_json:
+        if c.get("chord_majmin") != "N":
+            chords.append(c)
+    return chords
 
-def main(file_path, workflow_slug):
-    upload_url, download_url = get_signed_urls()
-    upload_file_to_url(upload_url, file_path)
-    time.sleep(2)  # espera o arquivo estabilizar no servidor
 
-    job_id = create_job(download_url, workflow_slug)
-    job_res = poll_job(job_id)
+# ===============================
+# Função simplificada p/ uso direto
+# ===============================
 
-    chords = extract_chords(job_res)
-    print("\n🎸 Acordes detectados (somente chord_majmin):")
-    if not chords:
-        print("Nenhum acorde encontrado.")
-    else:
-        # Filtrar só chord_majmin
-        chords_majmin = [c["chord_majmin"] for c in chords]
-        print(" ".join(chords_majmin))
+def get_chords_from_audio(audio_path, workflow_id="untitled-workflow-18c7355"):
+    """Processa o áudio e retorna lista de acordes (ex: ['C', 'F', 'G'])."""
+    audio_url = upload_audio(audio_path)
+    job = create_job(audio_url, workflow_id)
+    job_id = job["id"]
 
-def app(file):
-    if __name__ == "__main__":
-        arquivo = file
-        workflow_slug = "untitled-workflow-18c7355"  # seu workflow para detecção de acordes
-        main(arquivo, workflow_slug)
+    print("⏳ Processando job...")
+    result = get_job_status(job_id)
+    chords_data = extract_chords(result)
+
+    acordes = [c["chord_majmin"] for c in chords_data]
+    print(f"🎶 Acordes detectados: {acordes}")
+    return acordes
