@@ -113,10 +113,10 @@ def extract_chords(job_result):
                 "chord_majmin": chord_label
             })
 
-    with open("acordes.json", "w", encoding="utf-8") as f:
+    with open("wonderwall_chords.json", "w", encoding="utf-8") as f:
         json.dump(normalized, f, ensure_ascii=False, indent=4)
 
-    print("Dicionário convertido para JSON e salvo em 'acordes.json'")
+    print("Dicionário convertido para JSON e salvo em 'creep_chords.json'")
     if not normalized:
         print("⚠️ Formato de acordes não reconhecido ou lista vazia")
     return normalized
@@ -153,4 +153,4 @@ def app(file):
         main(arquivo, workflow_slug)
 
         
-app("C:/Users/duart/OneDrive/Documentos/Trilha UFPB 2025.2/Hackathon/audios/VelhaInfancia.mp3")
+app("audios/Wonderwall.mp3")

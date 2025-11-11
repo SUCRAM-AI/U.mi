@@ -115,7 +115,6 @@ def extract_chords(job_data):
 # ===============================
 
 def get_chords_from_audio(audio_path, workflow_id="untitled-workflow-18c7355"):
-    """Processa o áudio e retorna lista de acordes (ex: ['C', 'F', 'G'])."""
     audio_url = upload_audio(audio_path)
     job = create_job(audio_url, workflow_id)
     job_id = job["id"]
