@@ -601,7 +601,7 @@ const styles = StyleSheet.create({
   icon20: { width: 36, height: 44, position: 'absolute', top: 10, resizeMode: 'contain' },
   _70ModoMusica: {
     color: '#ffffff',
-    fontFamily: 'Lexend-SemiBold', /
+    fontFamily: 'Lexend-SemiBold', 
     fontSize: 16,
     fontWeight: '600',
     position: 'absolute',
