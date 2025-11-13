@@ -1,6 +1,8 @@
 import React from 'react';
-import { StyleSheet, View, Text, Image, ScrollView, Platform } from 'react-native';
+import { StyleSheet, View, Text, Image, ScrollView, Platform, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
+import { useAuth } from '../../contexts/AuthContext';
 
 
 // Recursos SVG (Importados como Componentes)
@@ -25,6 +27,17 @@ import TrilhaIcon from '../../assets/images/trilhateorica.svg';
 import BottomNav from '../../components/ui/bottom-nav';
 
 const TrilhaTeoria = () => {
+  const router = useRouter();
+  const { user } = useAuth();
+  
+  const progressPercentage = user ? (user.lessonsCompleted / 5) * 100 : 0;
+  
+  const handleLessonClick = (lessonNumber: number) => {
+    if (lessonNumber <= 3) {
+      router.push('/(tabs)/licao');
+    }
+  };
+  
   return (
     <View style={styles.trilha}>
       {/* Header Fixo */}
@@ -53,7 +66,9 @@ const TrilhaTeoria = () => {
                 style={styles.unnamedRemovebgPreview1}
               />
               <View style={styles.progressTextContainer}>
-                <Text style={styles.seuProgresso45}>Seu Progresso: 45%</Text>
+                <Text style={styles.seuProgresso45}>
+                  Seu Progresso: {Math.round(progressPercentage)}%
+                </Text>
                 <Text style={styles.cadaLicaoUmPassoEmDirecaoMaestria}>
                   Cada lição é um passo em direção à maestria!
                 </Text>
@@ -66,13 +81,15 @@ const TrilhaTeoria = () => {
               <LinhaDaTrilha width={80} height={'100%'} style={styles.svg}preserveAspectRatio="none" />
 
               {/* Lição 1: Notas Musicais (Concluída Cor Verde) */}
-              <LinearGradient
-                colors={['rgba(74, 222, 128, 1)', 'rgba(16, 185, 129, 1)']}
-                start={{ x: 0.0, y: 0.0 }}
-                end={{ x: 1.0, y: 1.0 }}
-                style={[styles.lessonCircle, styles.pos1]}>
-                <IconeNota width={48} height={58} style={styles.icon} />
-              </LinearGradient>
+              <TouchableOpacity onPress={() => handleLessonClick(1)}>
+                <LinearGradient
+                  colors={['rgba(74, 222, 128, 1)', 'rgba(16, 185, 129, 1)']}
+                  start={{ x: 0.0, y: 0.0 }}
+                  end={{ x: 1.0, y: 1.0 }}
+                  style={[styles.lessonCircle, styles.pos1]}>
+                  <IconeNota width={48} height={58} style={styles.icon} />
+                </LinearGradient>
+              </TouchableOpacity>
               <Text style={[styles.lessonText, styles.pos1Text]}>Notas Musicais</Text>
               <View style={[styles.lessonRect, styles.pos1Rect]} />
 
@@ -83,13 +100,15 @@ const TrilhaTeoria = () => {
 
 
               {/* Lição 2: Intervalos (Concluída  Cor Verde) */}
-              <LinearGradient
-                colors={['rgba(74, 222, 128, 1)', 'rgba(16, 185, 129, 1)']}
-                start={{ x: 0.0, y: 0.0 }}
-                end={{ x: 1.0, y: 1.0 }}
-                style={[styles.lessonCircle, styles.pos2]}>
-                <IconeIntervalos width={48} height={58} style={styles.icon} />
-              </LinearGradient>
+              <TouchableOpacity onPress={() => handleLessonClick(2)}>
+                <LinearGradient
+                  colors={['rgba(74, 222, 128, 1)', 'rgba(16, 185, 129, 1)']}
+                  start={{ x: 0.0, y: 0.0 }}
+                  end={{ x: 1.0, y: 1.0 }}
+                  style={[styles.lessonCircle, styles.pos2]}>
+                  <IconeIntervalos width={48} height={58} style={styles.icon} />
+                </LinearGradient>
+              </TouchableOpacity>
               <Text style={[styles.lessonText, styles.pos2Text]}>Intervalos</Text>
               <View style={[styles.lessonRect, styles.pos2Rect]} />
 
@@ -100,13 +119,15 @@ const TrilhaTeoria = () => {
 
 
               {/* Lição 3: Escolas Maiores (Em Progresso Cor Laranja) */}
-              <LinearGradient
-                colors={['rgba(251, 191, 36, 1)', 'rgba(249, 115, 22, 1)']}
-                start={{ x: 0.0, y: 0.0 }}
-                end={{ x: 1.0, y: 1.0 }}
-                style={[styles.lessonCircle, styles.pos3]}>
-                <IconeEscalas width={48} height={58} style={styles.icon} />
-              </LinearGradient>
+              <TouchableOpacity onPress={() => handleLessonClick(3)}>
+                <LinearGradient
+                  colors={['rgba(251, 191, 36, 1)', 'rgba(249, 115, 22, 1)']}
+                  start={{ x: 0.0, y: 0.0 }}
+                  end={{ x: 1.0, y: 1.0 }}
+                  style={[styles.lessonCircle, styles.pos3]}>
+                  <IconeEscalas width={48} height={58} style={styles.icon} />
+                </LinearGradient>
+              </TouchableOpacity>
               <Text style={[styles.lessonText, styles.pos3Text]}>Escolas Maiores</Text>
               <Text style={[styles.pos3SubText]}>Avaliando</Text>
               <View style={[styles.lessonRect, styles.pos3Rect]} />

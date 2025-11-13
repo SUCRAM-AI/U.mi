@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     StyleSheet,
     View,
@@ -8,7 +8,11 @@ import {
     ScrollView,
     StatusBar,
     SafeAreaView,
+    Alert,
 } from 'react-native';
+import { useRouter } from 'expo-router';
+import { useAuth } from '../../contexts/AuthContext';
+import { Audio } from 'expo-av';
 
 import VoltarSVG from '../../assets/images/voltar.svg';
 import Iconemusica from '../../assets/images/iconmusic.svg';
@@ -21,6 +25,86 @@ const acordes = require('../../assets/images/acordes.png');
 
 
 const LicaoAcordesMaioresScreen = () => {
+    const router = useRouter();
+    const { completeLesson, addXP } = useAuth();
+    
+    // Estado do Quiz 1
+    const [quiz1Answer, setQuiz1Answer] = useState<string | null>(null);
+    const correctAnswer1 = 'Dó Maior';
+    
+    // Estado do Quiz 2 (Formar acorde)
+    const [selectedNotes, setSelectedNotes] = useState<string[]>([]);
+    const correctNotes = ['Sol', 'Si', 'Ré']; // Sol Maior: Sol (fundamental), Si (terça), Ré (quinta)
+    const [quiz2Complete, setQuiz2Complete] = useState(false);
+    
+    // Estado de conclusão
+    const [isCompleted, setIsCompleted] = useState(false);
+    
+    const handleQuiz1Answer = (answer: string) => {
+        setQuiz1Answer(answer);
+        if (answer === correctAnswer1) {
+            addXP(50);
+        }
+    };
+    
+    const handleNoteClick = (note: string) => {
+        if (selectedNotes.includes(note)) {
+            setSelectedNotes(selectedNotes.filter(n => n !== note));
+        } else {
+            const newSelection = [...selectedNotes, note];
+            setSelectedNotes(newSelection);
+            
+            // Verificar se está correto
+            if (newSelection.length === 3) {
+                const isCorrect = 
+                    newSelection.includes('Sol') && 
+                    newSelection.includes('Si') && 
+                    newSelection.includes('Ré');
+                
+                if (isCorrect) {
+                    setQuiz2Complete(true);
+                    addXP(50);
+                    Alert.alert('Parabéns!', 'Você formou o acorde de Sol Maior corretamente!');
+                } else {
+                    Alert.alert('Ops!', 'Tente novamente. Lembre-se: Fundamental, Terça, Quinta.');
+                    setSelectedNotes([]);
+                }
+            }
+        }
+    };
+    
+    const handleCompleteLesson = async () => {
+        if (!quiz1Answer || !quiz2Complete) {
+            Alert.alert('Atenção', 'Complete todos os exercícios antes de concluir a lição.');
+            return;
+        }
+        
+        await completeLesson('acordes-maiores');
+        setIsCompleted(true);
+        Alert.alert('Parabéns!', 'Lição concluída! Você ganhou 150 XP!', [
+            { text: 'OK', onPress: () => router.push('/(tabs)/trilha') }
+        ]);
+    };
+    
+    const getButtonStyle = (answer: string) => {
+        if (quiz1Answer === null) return styles.button01;
+        if (answer === correctAnswer1) return styles.button03;
+        if (answer === quiz1Answer && answer !== correctAnswer1) return styles.button02;
+        return styles.button01;
+    };
+    
+    const getNoteButtonStyle = (note: string) => {
+        const isSelected = selectedNotes.includes(note);
+        const isCorrect = correctNotes.includes(note);
+        
+        if (isSelected && isCorrect) {
+            return styles.button06; // Verde (correto)
+        } else if (isSelected && !isCorrect) {
+            return styles.button09; // Vermelho (errado)
+        }
+        return styles.button04; // Cinza (neutro)
+    };
+    
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar barStyle="light-content" backgroundColor="#7E22CE" />
@@ -37,7 +121,11 @@ const LicaoAcordesMaioresScreen = () => {
                     />
                     <View style={styles.gradientoverlay} />
                     
-                    <TouchableOpacity style={styles.button13} activeOpacity={0.7}>
+                    <TouchableOpacity 
+                        style={styles.button13} 
+                        activeOpacity={0.7}
+                        onPress={() => router.back()}
+                    >
                         <VoltarSVG 
                             width={40}           
                             height={40}          
@@ -137,16 +225,38 @@ const LicaoAcordesMaioresScreen = () => {
                         
                         {/* Botões de Resposta */}
                         <View style={styles.quizButtonsContainer}>
-                            <TouchableOpacity style={styles.button01}>
+                            <TouchableOpacity 
+                                style={getButtonStyle('Sol Maior')}
+                                onPress={() => handleQuiz1Answer('Sol Maior')}
+                                disabled={quiz1Answer !== null}
+                            >
                                 <Text style={styles.solMaiorSpan}>Sol Maior</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.button02}>
+                            <TouchableOpacity 
+                                style={getButtonStyle('Fá Maior')}
+                                onPress={() => handleQuiz1Answer('Fá Maior')}
+                                disabled={quiz1Answer !== null}
+                            >
                                 <Text style={styles.fMaiorSpan}>Fá Maior</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.button03}>
+                            <TouchableOpacity 
+                                style={getButtonStyle('Dó Maior')}
+                                onPress={() => handleQuiz1Answer('Dó Maior')}
+                                disabled={quiz1Answer !== null}
+                            >
                                 <Text style={styles.dMaiorSpan}>Dó Maior</Text>
                             </TouchableOpacity>
                         </View>
+                        {quiz1Answer && (
+                            <Text style={[
+                                styles.feedbackText,
+                                quiz1Answer === correctAnswer1 ? styles.feedbackCorrect : styles.feedbackWrong
+                            ]}>
+                                {quiz1Answer === correctAnswer1 
+                                    ? '✅ Correto! Você ganhou 50 XP!' 
+                                    : '❌ Incorreto. A resposta correta é Dó Maior.'}
+                            </Text>
+                        )}
                     </View>
 
                     {/* Exercício: Forme o acorde de Sol Maior  */}
@@ -161,23 +271,80 @@ const LicaoAcordesMaioresScreen = () => {
                         {/* Botões de Notas */}
                         <View style={styles.notesButtonsContainer}>
                             <View style={styles.notesRow}>
-                                <TouchableOpacity style={styles.button04}><Text style={styles.lSpan}>Lá</Text></TouchableOpacity>
-                                <TouchableOpacity style={styles.button05}><Text style={styles.siSpan}>Si</Text></TouchableOpacity>
-                                <TouchableOpacity style={styles.button06}><Text style={styles.solSpan}>Sol</Text></TouchableOpacity>
-                                <TouchableOpacity style={styles.button07}><Text style={styles.dSpan}>Dó</Text></TouchableOpacity>
+                                <TouchableOpacity 
+                                    style={getNoteButtonStyle('Lá')}
+                                    onPress={() => handleNoteClick('Lá')}
+                                    disabled={quiz2Complete}
+                                >
+                                    <Text style={styles.lSpan}>Lá</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity 
+                                    style={getNoteButtonStyle('Si')}
+                                    onPress={() => handleNoteClick('Si')}
+                                    disabled={quiz2Complete}
+                                >
+                                    <Text style={styles.siSpan}>Si</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity 
+                                    style={getNoteButtonStyle('Sol')}
+                                    onPress={() => handleNoteClick('Sol')}
+                                    disabled={quiz2Complete}
+                                >
+                                    <Text style={styles.solSpan}>Sol</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity 
+                                    style={getNoteButtonStyle('Dó')}
+                                    onPress={() => handleNoteClick('Dó')}
+                                    disabled={quiz2Complete}
+                                >
+                                    <Text style={styles.dSpan}>Dó</Text>
+                                </TouchableOpacity>
                             </View>
                             <View style={styles.notesRow}>
-                                <TouchableOpacity style={styles.button08}><Text style={styles.fSpan}>Fá#</Text></TouchableOpacity>
-                                <TouchableOpacity style={styles.button09}><Text style={styles.mi01Span}>Mi</Text></TouchableOpacity>
-                                <TouchableOpacity style={styles.button10}><Text style={styles.rSpan}>Ré</Text></TouchableOpacity>
-                                <TouchableOpacity style={styles.button11}><Text style={styles.si01Span}>Si</Text></TouchableOpacity>
+                                <TouchableOpacity 
+                                    style={getNoteButtonStyle('Fá#')}
+                                    onPress={() => handleNoteClick('Fá#')}
+                                    disabled={quiz2Complete}
+                                >
+                                    <Text style={styles.fSpan}>Fá#</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity 
+                                    style={getNoteButtonStyle('Mi')}
+                                    onPress={() => handleNoteClick('Mi')}
+                                    disabled={quiz2Complete}
+                                >
+                                    <Text style={styles.mi01Span}>Mi</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity 
+                                    style={getNoteButtonStyle('Ré')}
+                                    onPress={() => handleNoteClick('Ré')}
+                                    disabled={quiz2Complete}
+                                >
+                                    <Text style={styles.rSpan}>Ré</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity 
+                                    style={getNoteButtonStyle('Si2')}
+                                    onPress={() => handleNoteClick('Si2')}
+                                    disabled={quiz2Complete}
+                                >
+                                    <Text style={styles.si01Span}>Si</Text>
+                                </TouchableOpacity>
                             </View>
                         </View>
+                        {quiz2Complete && (
+                            <Text style={styles.feedbackText}>
+                                ✅ Acorde formado corretamente! Você ganhou 50 XP!
+                            </Text>
+                        )}
                     </View>
 
                     {/* Botão Concluir) */}
                     <View style={styles.footer}>
-                        <TouchableOpacity style={styles.button12}>
+                        <TouchableOpacity 
+                            style={[styles.button12, (!quiz1Answer || !quiz2Complete) && styles.buttonDisabled]}
+                            onPress={handleCompleteLesson}
+                            disabled={!quiz1Answer || !quiz2Complete}
+                        >
                             <View style={styles.icon01}>
                                 <ConcluirSVG width={20} height={20}/>
                             </View>
@@ -628,6 +795,22 @@ const styles = StyleSheet.create({
         fontFamily: 'Lexend',
         fontWeight: '700',
         lineHeight: 28,
+    },
+    feedbackText: {
+        marginTop: 12,
+        fontSize: 14,
+        fontFamily: 'Lexend',
+        fontWeight: '600',
+        textAlign: 'center',
+    },
+    feedbackCorrect: {
+        color: '#22C55E',
+    },
+    feedbackWrong: {
+        color: '#EF4444',
+    },
+    buttonDisabled: {
+        opacity: 0.5,
     },
 });
 

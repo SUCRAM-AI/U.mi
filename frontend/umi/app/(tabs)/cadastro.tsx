@@ -1,5 +1,7 @@
 import React, {useState} from "react";
-import { SafeAreaView, View, ScrollView, ImageBackground, Image, Text, TextInput, TouchableOpacity, StyleSheet, } from "react-native";
+import { SafeAreaView, View, ScrollView, ImageBackground, Image, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from "react-native";
+import { useRouter } from 'expo-router';
+import { useAuth } from '../../contexts/AuthContext';
 
 import LogoUMISVG from '../../assets/images/logo_umi.svg';
 import UserIconSVG from '../../assets/images/user_icon.svg';
@@ -14,10 +16,46 @@ export default function RegisterScreen() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const { register } = useAuth();
+    const router = useRouter();
 
-    const handleRegister = () => {
-        alert('Botão Cadastrar Pressionado!');
-        // colocar lógica de cadastro
+    const handleRegister = async () => {
+        if (!name.trim()) {
+            Alert.alert('Erro', 'Por favor, insira seu nome');
+            return;
+        }
+        
+        if (!email.trim()) {
+            Alert.alert('Erro', 'Por favor, insira seu email');
+            return;
+        }
+        
+        if (password.length < 6) {
+            Alert.alert('Erro', 'A senha deve ter pelo menos 6 caracteres');
+            return;
+        }
+        
+        if (password !== confirmPassword) {
+            Alert.alert('Erro', 'As senhas não coincidem');
+            return;
+        }
+        
+        setIsLoading(true);
+        try {
+            const success = await register(name, email, password);
+            if (success) {
+                Alert.alert('Sucesso', 'Conta criada com sucesso!', [
+                    { text: 'OK', onPress: () => router.replace('/(tabs)/trilha') }
+                ]);
+            } else {
+                Alert.alert('Erro', 'Este email já está cadastrado');
+            }
+        } catch (error) {
+            Alert.alert('Erro', 'Ocorreu um erro ao criar a conta');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -118,14 +156,22 @@ export default function RegisterScreen() {
                     </View>
 
                     {/*Botão Cadastrar */}
-                    <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
-                        <Text style={styles.registerButtonText}>Cadastrar</Text>
+                    <TouchableOpacity 
+                        style={[styles.registerButton, isLoading && styles.buttonDisabled]} 
+                        onPress={handleRegister}
+                        disabled={isLoading}
+                    >
+                        {isLoading ? (
+                            <ActivityIndicator color="#FFFFFF" />
+                        ) : (
+                            <Text style={styles.registerButtonText}>Cadastrar</Text>
+                        )}
                     </TouchableOpacity>
                     
                     {/*Link para Login */}
                     <View style={styles.loginLinkContainer}>
                         <Text style={styles.loginLinkText}>Já tenho uma conta?</Text>
-                        <TouchableOpacity onPress={() => alert('Ir para Login')}>
+                        <TouchableOpacity onPress={() => router.push('/(tabs)/login')}>
                             <Text style={styles.loginLinkButton}>Entrar</Text>
                         </TouchableOpacity>
                     </View>
@@ -270,5 +316,8 @@ const styles = StyleSheet.create({
         color: '#FF9900', 
         fontSize: 16,
         fontWeight: '700',
-    }
+    },
+    buttonDisabled: {
+        opacity: 0.6,
+    },
 });

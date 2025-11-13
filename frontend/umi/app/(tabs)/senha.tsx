@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     StyleSheet,
     View,
@@ -10,7 +10,10 @@ import {
     Platform,
     SafeAreaView,
     ScrollView,
+    Alert,
+    ActivityIndicator,
 } from 'react-native';
+import { useRouter } from 'expo-router';
 
 const  Lyricsthink = require('../../assets/images/thinklyrics.png');
 import EmailIconSVG from '../../assets/images/user_icon.svg'; 
@@ -19,6 +22,28 @@ import LogoUMISVG from '../../assets/images/logo_umi.svg';
 const { width, height } = Dimensions.get('window');
 
 const PasswordRecoveryScreen = () => {
+    const [email, setEmail] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const router = useRouter();
+    
+    const handleRecovery = () => {
+        if (!email.trim()) {
+            Alert.alert('Erro', 'Por favor, insira seu email');
+            return;
+        }
+        
+        setIsLoading(true);
+        // Simular envio de email
+        setTimeout(() => {
+            setIsLoading(false);
+            Alert.alert(
+                'Email enviado!', 
+                'Verifique sua caixa de entrada para redefinir sua senha.',
+                [{ text: 'OK', onPress: () => router.push('/(tabs)/login') }]
+            );
+        }, 1500);
+    };
+    
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollViewContent}>
@@ -70,18 +95,31 @@ const PasswordRecoveryScreen = () => {
                                     placeholderTextColor="#6B7280"
                                     keyboardType="email-address"
                                     autoCapitalize="none"
+                                    value={email}
+                                    onChangeText={setEmail}
                                 />
                             </View>
 
                             {/* Recovery Button */}
-                            <TouchableOpacity style={styles.button}>
-                                <Text style={styles.enviarLinkDeRecuperacao}>
-                                    Enviar link de recuperação
-                                </Text>
+                            <TouchableOpacity 
+                                style={[styles.button, isLoading && styles.buttonDisabled]}
+                                onPress={handleRecovery}
+                                disabled={isLoading}
+                            >
+                                {isLoading ? (
+                                    <ActivityIndicator color="#FFFFFF" />
+                                ) : (
+                                    <Text style={styles.enviarLinkDeRecuperacao}>
+                                        Enviar link de recuperação
+                                    </Text>
+                                )}
                             </TouchableOpacity>
 
                             {/* Back to Login Link */}
-                            <TouchableOpacity style={styles.voltarAoLoginContainer}>
+                            <TouchableOpacity 
+                                style={styles.voltarAoLoginContainer}
+                                onPress={() => router.push('/(tabs)/login')}
+                            >
                                 <Text style={styles.voltarAoLogin}>
                                     Voltar ao login
                                 </Text>
@@ -256,6 +294,9 @@ const styles = StyleSheet.create({
         fontWeight: '400',
         lineHeight: 24,
         textAlign: 'center',
+    },
+    buttonDisabled: {
+        opacity: 0.6,
     },
 });
 

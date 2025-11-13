@@ -2,6 +2,7 @@
 
 import { Tabs } from 'expo-router';
 import React from 'react';
+import { Ionicons } from '@expo/vector-icons';
 
 // Este componente diz: "Tudo aqui dentro terá abas na parte inferior"
 export default function TabLayout() {
@@ -30,6 +31,15 @@ export default function TabLayout() {
       <Tabs.Screen 
         name="trilha" 
         options={{ title: 'Trilha' }}
+      />
+      <Tabs.Screen 
+        name="lesson-progression" 
+        options={{ 
+          title: 'Progressões',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="musical-notes" size={size} color={color} />
+          ),
+        }}
       />
     </Tabs>
   );

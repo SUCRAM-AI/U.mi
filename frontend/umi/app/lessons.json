@@ -1,0 +1,189 @@
+{
+    "modules": [
+      {
+        "id": 1,
+        "title": "Introdução ao Instrumento",
+        "color": "#7C3AED",
+        "emoji": "🩵",
+        "objective": "Familiarizar o usuário com o violão e criar base para tocar corretamente.",
+        "description": "O aluno aprende as partes do violão, postura, numeração das cordas e dos dedos, com atividades visuais e exercícios interativos.",
+        "tasks": [
+          {
+            "id": 1,
+            "title": "Partes do Violão",
+            "type": "visual",
+            "description": "Identifique corpo, trastes, braço, cabeça e pestana no diagrama do violão.",
+            "asset": "assets/violao_partes.png",
+            "interaction": "Tap nas partes para revelar os nomes."
+          },
+          {
+            "id": 2,
+            "title": "Postura Correta",
+            "type": "exercise",
+            "description": "Aprenda a segurar o instrumento corretamente, ajustando braço e corpo.",
+            "asset": "assets/postura_correta.png",
+            "interaction": "Comparar com imagem demonstrativa."
+          },
+          {
+            "id": 3,
+            "title": "Numeração das Cordas e Dedos",
+            "type": "quiz",
+            "description": "Descubra como as cordas e dedos são numerados (corda 1 é a mais fina).",
+            "interaction": "Quiz de múltipla escolha."
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Afinação e Som",
+        "color": "#F97316",
+        "emoji": "💚",
+        "objective": "Desenvolver percepção auditiva e controle do som.",
+        "description": "O aluno aprende a afinar o instrumento, reconhecer sons e testar sua audição.",
+        "tasks": [
+          {
+            "id": 1,
+            "title": "Ouça Cada Corda Solta",
+            "type": "audio",
+            "description": "Ouça as cordas soltas e memorize os sons: E, A, D, G, B, E.",
+            "audio_files": ["E.mp3", "A.mp3", "D.mp3", "G.mp3", "B.mp3", "E2.mp3"]
+          },
+          {
+            "id": 2,
+            "title": "Reconhecimento Auditivo",
+            "type": "quiz",
+            "description": "O app toca uma nota e o usuário tenta identificá-la.",
+            "interaction": "3 opções de resposta com áudio de exemplo."
+          },
+          {
+            "id": 3,
+            "title": "Quiz das Notas Abertas",
+            "type": "quiz",
+            "description": "Teste seus conhecimentos sobre as cordas e notas abertas do violão.",
+            "questions": [
+              {
+                "question": "Qual é a nota da 5ª corda?",
+                "options": ["E", "A", "G"],
+                "correct": "A"
+              }
+            ]
+          },
+          {
+            "id": 4,
+            "title": "Teste Sua Afinação",
+            "type": "practice",
+            "description": "Grave o som do seu violão e veja se está afinado corretamente.",
+            "interaction": "Envio via /detect_chord"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Notas e Escala Natural",
+        "color": "#FACC15",
+        "emoji": "💛",
+        "objective": "Entender o conceito de notas musicais e onde aparecem no braço do violão.",
+        "description": "Introduz o sistema de notas e o braço do violão com exercícios auditivos.",
+        "tasks": [
+          {
+            "id": 1,
+            "title": "As 12 Notas Musicais",
+            "type": "audio",
+            "description": "Aprenda a sequência cromática (C, C#, D, D#, E, F, F#, G, G#, A, A#, B).",
+            "audio_file": "escala_cromatica.mp3"
+          },
+          {
+            "id": 2,
+            "title": "Notas no Braço",
+            "type": "visual",
+            "description": "Visualize no braço do violão onde cada nota se encontra.",
+            "asset": "assets/braco_violao_notas.png"
+          },
+          {
+            "id": 3,
+            "title": "Exercício de Correspondência",
+            "type": "practice",
+            "description": "Toque uma nota e o app identificará automaticamente.",
+            "interaction": "Reconhecimento via /detect_chord"
+          },
+          {
+            "id": 4,
+            "title": "Quiz Auditivo",
+            "type": "quiz",
+            "description": "Ouça uma nota e selecione a correta entre as opções apresentadas.",
+            "interaction": "Botões com feedback visual."
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Formação de Acordes",
+        "color": "#FB923C",
+        "emoji": "🧡",
+        "objective": "Ensinar como acordes são construídos e praticar suas formas básicas.",
+        "description": "Aborda tríades, diferenças entre acordes maiores e menores, e prática auditiva.",
+        "tasks": [
+          {
+            "id": 1,
+            "title": "O Que é uma Tríade?",
+            "type": "visual",
+            "description": "Aprenda sobre tônica, terça e quinta com exemplos visuais e auditivos.",
+            "asset": "assets/triade.png"
+          },
+          {
+            "id": 2,
+            "title": "Ouça a Diferença",
+            "type": "audio",
+            "description": "Compare um acorde maior e menor e identifique a diferença sonora.",
+            "audio_files": ["acorde_maior.mp3", "acorde_menor.mp3"]
+          },
+          {
+            "id": 3,
+            "title": "Pratique os Acordes",
+            "type": "practice",
+            "description": "Toque C, D, E, G e Am — o app reconhecerá e validará.",
+            "interaction": "Envio via /detect_chord"
+          },
+          {
+            "id": 4,
+            "title": "Desafio Monte o Acorde",
+            "type": "challenge",
+            "description": "O app mostra um nome e o usuário tenta tocar o acorde correto.",
+            "interaction": "Verificação automática via espectrograma."
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Harmonia e Progressões",
+        "color": "#F43F5E",
+        "emoji": "❤️",
+        "objective": "Compreender as relações entre os acordes e ouvir suas funções na harmonia.",
+        "description": "Introduz o campo harmônico e a relação entre tônica, dominante e subdominante.",
+        "tasks": [
+          {
+            "id": 1,
+            "title": "Campo Harmônico",
+            "type": "visual",
+            "description": "Aprenda o conceito básico de campo harmônico com o ciclo I–VII.",
+            "asset": "assets/campo_harmonico.png"
+          },
+          {
+            "id": 2,
+            "title": "Funções Harmônicas",
+            "type": "quiz",
+            "description": "Ouça um acorde e identifique se é Tônica, Subdominante ou Dominante.",
+            "interaction": "Feedback imediato com cor e som."
+          },
+          {
+            "id": 3,
+            "title": "Desafio Final",
+            "type": "practice",
+            "description": "Toque a progressão I–V–vi–IV (C–G–Am–F).",
+            "interaction": "Envio via /detect_chord com análise de acertos."
+          }
+        ]
+      }
+    ]
+  }
+  

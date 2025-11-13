@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Text, Image, ScrollView, TouchableOpacity } from 'react-native';
+import { useAuth } from '../../contexts/AuthContext';
 
 
 import MenuIcon from '../../assets/images/config.svg'; // Menu Header (Configurações)
@@ -14,8 +15,10 @@ const perfilImg = require('../../assets/images/perfil.png');
 const conquistaImg = require('../../assets/images/conquista.png');
 
 const Perfil = () => {
-
+    const { user, logout } = useAuth();
     const LockedIcon = IconeCadeadoCinza;
+    
+    const progressPercentage = user ? (user.xp / user.xpToNextLevel) * 100 : 0;
 
   return (
     <View style={styles.perfil}>
@@ -42,34 +45,36 @@ const Perfil = () => {
                 source={perfilImg} 
               />
               <View style={styles.backgroundBorder}>
-                <Text style={styles._12}>12</Text>
+                <Text style={styles._12}>{user?.level || 1}</Text>
               </View>
             </View>
-            <Text style={styles.nome}>Xandinho</Text>
+            <Text style={styles.nome}>{user?.name || 'Usuário'}</Text>
           </View>
 
           <View style={styles.section2}>
             <View style={styles.section2Header}>
               <Text style={styles.nVel}>Nível</Text>
-              <Text style={styles._12502000Xp}>1250 / 2000 XP</Text>
+              <Text style={styles._12502000Xp}>
+                {user?.xp || 0} / {user?.xpToNextLevel || 2000} XP
+              </Text>
             </View>
             <View style={styles.backgroundBar}>
-                <View style={styles.progressBarFill} />
+                <View style={[styles.progressBarFill, { width: `${progressPercentage}%` }]} />
             </View>
           </View>
 
           <View style={styles.section3}>
             <View style={styles.statCardHalf}>
               <Text style={styles.licoesFeitas}>Lições Feitas</Text>
-              <Text style={styles._84}>84</Text>
+              <Text style={styles._84}>{user?.lessonsCompleted || 0}</Text>
             </View>
             <View style={styles.statCardHalf}>
               <Text style={styles.sequenciaDePratica}>Sequência de Prática</Text>
-              <Text style={styles._12Dias}>12 Dias</Text>
+              <Text style={styles._12Dias}>{user?.practiceStreak || 0} Dias</Text>
             </View>
             <View style={[styles.statCardHalf, styles.statCardFull]}>
               <Text style={styles.instrumento}>Instrumento</Text>
-              <Text style={styles.violao}>Violão</Text>
+              <Text style={styles.violao}>{user?.instrument || 'Violão'}</Text>
             </View>
           </View>
 
@@ -297,7 +302,6 @@ const styles = StyleSheet.create({
   progressBarFill: {
     backgroundColor: '#8a2be2',
     height: '100%',
-    width: '62.5%', 
     borderRadius: 9999,
   },
 

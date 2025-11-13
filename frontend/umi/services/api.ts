@@ -2,6 +2,8 @@
  * Serviço de API para comunicação com o backend
  */
 
+import * as FileSystem from 'expo-file-system';
+
 const API_BASE_URL = __DEV__ 
   ? 'http://192.168.0.7:5000/api'  // Desenvolvimento
   : 'https://your-api-url.com/api';  // Produção (ajustar quando necessário)
@@ -39,26 +41,101 @@ export interface ExtractChordsResponse {
  * Detecta acorde de um áudio
  */
 export async function detectChord(audioUri: string): Promise<DetectChordResponse> {
+  console.log('🔍 detectChord chamado com URI:', audioUri);
+  
   try {
-    const formData = new FormData();
+    let base64: string;
     
-    // Criar arquivo a partir do URI (React Native FormData)
+    // Verificar se é uma URI blob (web) ou file:// (nativo)
+    if (audioUri.startsWith('blob:') || audioUri.startsWith('http://') || audioUri.startsWith('https://')) {
+      // Web: converter blob para base64
+      console.log('🌐 Modo Web: convertendo blob para base64...');
+      const response = await fetch(audioUri);
+      const blob = await response.blob();
+      
+      // Converter blob para base64
+      base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const result = reader.result as string;
+          // Remover o prefixo data:audio/...;base64,
+          const base64Data = result.split(',')[1];
+          resolve(base64Data);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+      console.log('✅ Blob convertido para base64, tamanho:', base64.length);
+    } else {
+      // Nativo: usar expo-file-system
+      console.log('📱 Modo Nativo: usando expo-file-system...');
+      
+      // Verificar se o arquivo existe (apenas em nativo)
+      try {
+        const fileInfo = await FileSystem.getInfoAsync(audioUri);
+        console.log('📁 Informações do arquivo:', fileInfo);
+        
+        if (!fileInfo.exists) {
+          console.error('❌ Arquivo não existe:', audioUri);
+          throw new Error('Arquivo de áudio não encontrado');
+        }
+      } catch (error) {
+        // Se getInfoAsync não estiver disponível (web), continuar
+        console.log('⚠️ getInfoAsync não disponível, continuando...');
+      }
+      
+      // Ler o arquivo como base64
+      console.log('📖 Lendo arquivo como base64...');
+      base64 = await FileSystem.readAsStringAsync(audioUri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+      console.log('✅ Arquivo lido, tamanho base64:', base64.length);
+    }
+    
     const filename = audioUri.split('/').pop() || 'audio.wav';
     const match = /\.(\w+)$/.exec(filename);
     const type = match ? `audio/${match[1]}` : 'audio/wav';
     
-    // @ts-ignore - FormData no React Native aceita objetos com uri
-    formData.append('audio', {
-      uri: audioUri,
-      type: type,
-      name: filename,
-    } as any);
+    // Criar FormData e adicionar o arquivo
+    const formData = new FormData();
+    
+    if (audioUri.startsWith('blob:') || audioUri.startsWith('http://') || audioUri.startsWith('https://')) {
+      // Web: converter base64 para Blob e enviar como arquivo
+      console.log('📦 Criando Blob a partir do base64...');
+      const byteCharacters = atob(base64);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: type });
+      
+      // Adicionar o Blob ao FormData (web)
+      formData.append('audio', blob, filename);
+      console.log('✅ Blob adicionado ao FormData');
+    } else {
+      // Nativo: usar formato React Native
+      // @ts-ignore
+      formData.append('audio', {
+        uri: audioUri,
+        type: type,
+        name: filename,
+        // Adicionar os dados do arquivo
+        data: base64,
+      } as any);
+      console.log('✅ FormData preparado para React Native');
+    }
+
+    console.log('📤 Enviando requisição para:', `${API_BASE_URL}/detect-chord`);
+    console.log('📦 FormData preparado, filename:', filename, 'type:', type);
 
     const response = await fetch(`${API_BASE_URL}/detect-chord`, {
       method: 'POST',
       body: formData,
       // Não definir Content-Type manualmente - o fetch fará isso automaticamente com o boundary
     });
+    
+    console.log('📥 Resposta recebida, status:', response.status, 'ok:', response.ok);
 
     if (!response.ok) {
       const errorData = await response.json();

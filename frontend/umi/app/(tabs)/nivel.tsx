@@ -9,6 +9,7 @@ import {
     SafeAreaView,
     ScrollView,
 } from 'react-native';
+import { useRouter } from 'expo-router';
 
 import LogoUMISVG from '../../assets/images/logo_umi.svg';
 
@@ -19,6 +20,16 @@ const caminho = require('../../assets/images/background.png');
 const Nivellyrics = require('../../assets/images/lyricsnivel.png');
 
 const WelcomeScreen = () => {
+    const router = useRouter();
+    
+    const handleBasicLevel = () => {
+        router.replace('/(tabs)/trilha');
+    };
+    
+    const handleIntermediateLevel = () => {
+        router.replace('/(tabs)/trilha');
+    };
+    
     return (
         <SafeAreaView style={styles.container}>
             {/* Background Image fora do ScrollView para cobrir tudo */}
@@ -67,7 +78,10 @@ const WelcomeScreen = () => {
                     <View style={styles.buttonsContainer}>
                         
                         {/* Button 1: Comece pelo Básico (Laranja) */}
-                        <TouchableOpacity style={styles.buttonOrange}>
+                        <TouchableOpacity 
+                            style={styles.buttonOrange}
+                            onPress={handleBasicLevel}
+                        >
                             <Text style={styles.buttonTitle}>
                                 Comece pelo Básico
                             </Text>
@@ -77,7 +91,10 @@ const WelcomeScreen = () => {
                         </TouchableOpacity>
 
                         {/* Button 2: Eu conheço o básico (Roxo) */}
-                        <TouchableOpacity style={styles.buttonPurple}>
+                        <TouchableOpacity 
+                            style={styles.buttonPurple}
+                            onPress={handleIntermediateLevel}
+                        >
                             <Text style={styles.buttonTitleWhite}>
                                 Eu conheço o básico
                             </Text>

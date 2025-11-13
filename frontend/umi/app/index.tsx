@@ -1,7 +1,18 @@
 import { Redirect } from 'expo-router';
 import React from 'react';
-// "Vá imediatamente para a rota /login."
+import { useAuth } from '../contexts/AuthContext';
+
+// Redireciona baseado no estado de autenticação
 export default function Index() {
-  // O Expo Router irá substituir a tela atual pela rota "/login"
-  return <Redirect href="/cadastro" />;
+  const { isAuthenticated, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return null; // Ou um componente de loading
+  }
+  
+  if (isAuthenticated) {
+    return <Redirect href="/(tabs)/trilha" />;
+  }
+  
+  return <Redirect href="/(tabs)/nivel" />;
 }

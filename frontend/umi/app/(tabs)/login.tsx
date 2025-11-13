@@ -1,5 +1,7 @@
 import React, {useState} from "react";
-import { SafeAreaView, View, ScrollView, ImageBackground, Image, Text, TextInput, TouchableOpacity, StyleSheet, } from "react-native";
+import { SafeAreaView, View, ScrollView, ImageBackground, Image, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from "react-native";
+import { useRouter } from 'expo-router';
+import { useAuth } from '../../contexts/AuthContext';
 
 // importações das imagens locais
 const HeaderBackground = require('../../assets/images/header_bg.png');
@@ -9,7 +11,44 @@ import UserIconSVG from '../../assets/images/user_icon.svg';
 import PasswordIconSVG from '../../assets/images/passwordicon.svg'; 
 
 export default () => {
-    const [textInput1, onChangeTextInput1] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const { login } = useAuth();
+    const router = useRouter();
+    
+    const handleLogin = async () => {
+        if (!email.trim()) {
+            Alert.alert('Erro', 'Por favor, insira seu email ou username');
+            return;
+        }
+        
+        setIsLoading(true);
+        try {
+            const success = await login(email, password);
+            if (success) {
+                router.replace('/(tabs)/trilha');
+            } else {
+                Alert.alert('Erro', 'Não foi possível fazer login');
+            }
+        } catch (error) {
+            Alert.alert('Erro', 'Ocorreu um erro ao fazer login');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    
+    const handleContinueAsGuest = async () => {
+        setIsLoading(true);
+        try {
+            await login('convidado@umi.com', '');
+            router.replace('/(tabs)/trilha');
+        } catch (error) {
+            Alert.alert('Erro', 'Ocorreu um erro');
+        } finally {
+            setIsLoading(false);
+        }
+    };
     
     return (
         <SafeAreaView style={styles.container}>
@@ -51,9 +90,11 @@ export default () => {
                                 />
                                 <TextInput
                                     placeholder={"voce@exemplo.com"}
-                                    value={textInput1}
-                                    onChangeText={onChangeTextInput1}
+                                    value={email}
+                                    onChangeText={setEmail}
                                     style={styles.input}
+                                    keyboardType="email-address"
+                                    autoCapitalize="none"
                                 />
                             </View>
                             <Text style={styles.text4}>
@@ -69,6 +110,8 @@ export default () => {
                                 />
                                 <TextInput
                                     placeholder={"••••••••"}
+                                    value={password}
+                                    onChangeText={setPassword}
                                     style={styles.inputPassword}
                                     secureTextEntry={true}
                                 />
@@ -76,31 +119,52 @@ export default () => {
                         </View>
                     </View>
                     <View style={styles.view3}>
-                        <View style={styles.view4}>
-                            <Text style={styles.text6}>
-                                {"Esqueceu sua senha?"}
-                            </Text>
-                        </View>
+                        <TouchableOpacity onPress={() => router.push('/(tabs)/senha')}>
+                            <View style={styles.view4}>
+                                <Text style={styles.text6}>
+                                    {"Esqueceu sua senha?"}
+                                </Text>
+                            </View>
+                        </TouchableOpacity>
                     </View>
-                    <TouchableOpacity style={styles.button} onPress={()=>alert('Pressed!')}>
-                        <Text style={styles.text7}>
-                            {"Login"}
-                        </Text>
+                    <TouchableOpacity 
+                        style={[styles.button, isLoading && styles.buttonDisabled]} 
+                        onPress={handleLogin}
+                        disabled={isLoading}
+                    >
+                        {isLoading ? (
+                            <ActivityIndicator color="#FFFFFF" />
+                        ) : (
+                            <Text style={styles.text7}>
+                                {"Login"}
+                            </Text>
+                        )}
                     </TouchableOpacity>
                     <View style={styles.view5}>
                         <Text style={styles.text8}>
                             {"Não tem uma conta?"}
                         </Text>
                     </View>
-                    <TouchableOpacity style={styles.button2} onPress={()=>alert('Pressed!')}>
+                    <TouchableOpacity 
+                        style={styles.button2} 
+                        onPress={() => router.push('/(tabs)/cadastro')}
+                    >
                         <Text style={styles.text9}>
-                            {"Entrar"}
+                            {"Cadastrar"}
                         </Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.button3} onPress={()=>alert('Pressed!')}>
-                        <Text style={styles.text10}>
-                            {"Continuar como Convidado"}
-                        </Text>
+                    <TouchableOpacity 
+                        style={[styles.button3, isLoading && styles.buttonDisabled]} 
+                        onPress={handleContinueAsGuest}
+                        disabled={isLoading}
+                    >
+                        {isLoading ? (
+                            <ActivityIndicator color="#374151" />
+                        ) : (
+                            <Text style={styles.text10}>
+                                {"Continuar como Convidado"}
+                            </Text>
+                        )}
                     </TouchableOpacity>
                 </View>
             </ScrollView>
@@ -284,5 +348,8 @@ const styles = StyleSheet.create({
 	view5: {
 		alignItems: "center",
 		marginBottom: 21,
+	},
+	buttonDisabled: {
+		opacity: 0.6,
 	},
 });
