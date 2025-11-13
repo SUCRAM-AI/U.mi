@@ -1,0 +1,16 @@
+{
+  "id": "4.4",
+  "section": "2",
+  "unit": "4",
+  "lesson": "4.4",
+  "title": "Jogo de Memória Muscular",
+  "description": "Pratique a transição rápida entre acordes. O objetivo é desenvolver memória muscular para mudanças rápidas.",
+  "type": "pratica-sequencia",
+  "asset": "assets/images/memoria_muscular.png",
+  "successCriteria": "Completar a sequência de acordes com precisão",
+  "sequence": ["Em", "Am", "E", "Am", "Em", "E"],
+  "expectedChords": ["Em", "Am", "E", "Am", "Em", "E"],
+  "xpReward": 80,
+  "expectedFrequencies": [],
+  "tolerance": 30
+}

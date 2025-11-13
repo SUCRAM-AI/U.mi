@@ -1,0 +1,30 @@
+{
+  "id": "1.1",
+  "section": "1",
+  "unit": "1",
+  "lesson": "1.1",
+  "title": "Anatomia do Violão",
+  "description": "Identifique as principais partes do violão: corpo, braço, trastes, cabeça, pestana e cordas.",
+  "type": "quiz-arrastar",
+  "asset": "assets/images/violao_anatomia.png",
+  "successCriteria": "Todas as partes devem ser corretamente identificadas",
+  "items": [
+    { "id": "corpo", "label": "Corpo", "correctTarget": "corpo_zone" },
+    { "id": "braco", "label": "Braço", "correctTarget": "braco_zone" },
+    { "id": "trastes", "label": "Trastes", "correctTarget": "trastes_zone" },
+    { "id": "cabeca", "label": "Cabeça", "correctTarget": "cabeca_zone" },
+    { "id": "pestana", "label": "Pestana", "correctTarget": "pestana_zone" },
+    { "id": "cordas", "label": "Cordas", "correctTarget": "cordas_zone" }
+  ],
+  "dropZones": [
+    { "id": "corpo_zone", "label": "Corpo" },
+    { "id": "braco_zone", "label": "Braço" },
+    { "id": "trastes_zone", "label": "Trastes" },
+    { "id": "cabeca_zone", "label": "Cabeça" },
+    { "id": "pestana_zone", "label": "Pestana" },
+    { "id": "cordas_zone", "label": "Cordas" }
+  ],
+  "xpReward": 50,
+  "expectedFrequencies": [],
+  "tolerance": 20
+}

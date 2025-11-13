@@ -1,0 +1,26 @@
+{
+  "id": "1.2",
+  "section": "1",
+  "unit": "1",
+  "lesson": "1.2",
+  "title": "Numeração dos Dedos",
+  "description": "Aprenda a numeração correta dos dedos da mão esquerda (para destros): 1=indicador, 2=médio, 3=anelar, 4=mínimo.",
+  "type": "quiz-arrastar",
+  "asset": "assets/images/dedos_numero.png",
+  "successCriteria": "Todas as correspondências devem estar corretas",
+  "items": [
+    { "id": "dedo1", "label": "1 - Indicador", "correctTarget": "dedo1_zone" },
+    { "id": "dedo2", "label": "2 - Médio", "correctTarget": "dedo2_zone" },
+    { "id": "dedo3", "label": "3 - Anelar", "correctTarget": "dedo3_zone" },
+    { "id": "dedo4", "label": "4 - Mínimo", "correctTarget": "dedo4_zone" }
+  ],
+  "dropZones": [
+    { "id": "dedo1_zone", "label": "Indicador" },
+    { "id": "dedo2_zone", "label": "Médio" },
+    { "id": "dedo3_zone", "label": "Anelar" },
+    { "id": "dedo4_zone", "label": "Mínimo" }
+  ],
+  "xpReward": 40,
+  "expectedFrequencies": [],
+  "tolerance": 20
+}

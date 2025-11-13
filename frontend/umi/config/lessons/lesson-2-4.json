@@ -1,0 +1,16 @@
+{
+  "id": "2.4",
+  "section": "1",
+  "unit": "2",
+  "lesson": "2.4",
+  "title": "Desafio Melódico",
+  "description": "Pratique tocar uma melodia simples usando notas em diferentes casas e cordas.",
+  "type": "pratica-microfone",
+  "asset": "assets/images/melodia_exemplo.png",
+  "successCriteria": "Tocar a melodia completa sem erros",
+  "sequence": ["C", "D", "E", "F", "G", "A", "B", "C"],
+  "expectedChords": ["C", "D", "E", "F", "G", "A", "B", "C"],
+  "xpReward": 70,
+  "expectedFrequencies": [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25],
+  "tolerance": 25
+}

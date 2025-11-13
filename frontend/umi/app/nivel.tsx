@@ -11,13 +11,13 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 
-import LogoUMISVG from '../../assets/images/logo_umi.svg';
+import LogoUMISVG from '@assets/images/logo_umi.svg';
 
 const { width, height } = Dimensions.get('window');
 
 // imagens locais
-const caminho = require('../../assets/images/background.png');
-const Nivellyrics = require('../../assets/images/lyricsnivel.png');
+const caminho = require('@assets/images/background.png');
+const Nivellyrics = require('@assets/images/lyricsnivel.png');
 
 const WelcomeScreen = () => {
     const router = useRouter();

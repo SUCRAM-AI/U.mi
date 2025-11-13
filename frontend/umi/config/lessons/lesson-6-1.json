@@ -1,0 +1,16 @@
+{
+  "id": "6.1",
+  "section": "3",
+  "unit": "6",
+  "lesson": "6.1",
+  "title": "Levada Pop Básica",
+  "description": "Pratique uma levada (padrão rítmico) básica do pop: ↓ ↑ ↓ ↑. Combine batidas para baixo e para cima.",
+  "type": "strumming",
+  "asset": "assets/images/levada_pop.png",
+  "successCriteria": "Executar a levada pop básica com precisão",
+  "pattern": ["↓", "↑", "↓", "↑"],
+  "tempo": 120,
+  "xpReward": 70,
+  "expectedFrequencies": [],
+  "tolerance": 25
+}

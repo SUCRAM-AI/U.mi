@@ -1,0 +1,15 @@
+{
+  "id": "4.2",
+  "section": "2",
+  "unit": "4",
+  "lesson": "4.2",
+  "title": "Acorde E",
+  "description": "Pratique tocar o acorde E (Mi maior). É um acorde aberto fundamental.",
+  "type": "pratica-microfone",
+  "asset": "assets/images/acorde_e.png",
+  "successCriteria": "Tocar o acorde E corretamente",
+  "expectedChord": "E",
+  "xpReward": 60,
+  "expectedFrequencies": [329.63, 246.94, 196.00, 146.83, 110.00, 82.41],
+  "tolerance": 25
+}

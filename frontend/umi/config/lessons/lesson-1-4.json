@@ -1,0 +1,21 @@
+{
+  "id": "1.4",
+  "section": "1",
+  "unit": "1",
+  "lesson": "1.4",
+  "title": "Leitura de Tablatura Nível 1",
+  "description": "Introdução à leitura de tablatura (tab). Aprenda a ler os números nas linhas que representam as cordas e os trastes a serem pressionados.",
+  "type": "teoria",
+  "asset": "assets/images/tablatura_exemplo.png",
+  "successCriteria": "Compreender a estrutura básica de uma tablatura",
+  "content": [
+    "A tablatura mostra 6 linhas horizontais representando as 6 cordas do violão",
+    "A linha superior representa a 1ª corda (mais fina) e a inferior a 6ª corda (mais grossa)",
+    "Os números nas linhas indicam em qual traste você deve pressionar a corda",
+    "O número 0 (zero) significa tocar a corda solta",
+    "Os números são lidos da esquerda para a direita, como uma música"
+  ],
+  "xpReward": 50,
+  "expectedFrequencies": [],
+  "tolerance": 20
+}

@@ -1,0 +1,23 @@
+{
+  "id": "3.1",
+  "section": "2",
+  "unit": "3",
+  "lesson": "3.1",
+  "title": "Diagrama de Acordes",
+  "description": "Aprenda a ler diagramas de acordes. Cada diagrama mostra quais trastes pressionar em quais cordas para formar o acorde.",
+  "type": "leitura-diagrama",
+  "asset": "assets/images/diagrama_acorde.png",
+  "successCriteria": "Compreender e identificar partes do diagrama de acordes",
+  "diagram": {
+    "chordName": "Em",
+    "frets": [0, 2, 2, 0, 0, 0],
+    "strings": [0, 1, 2, 3, 4, 5],
+    "fingerPositions": [
+      { "fret": 2, "string": 4, "finger": 2 },
+      { "fret": 2, "string": 3, "finger": 3 }
+    ]
+  },
+  "xpReward": 50,
+  "expectedFrequencies": [],
+  "tolerance": 20
+}

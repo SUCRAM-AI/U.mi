@@ -1,0 +1,16 @@
+{
+  "id": "9.2",
+  "section": "5",
+  "unit": "9",
+  "lesson": "9.2",
+  "title": "Progressão Pop",
+  "description": "Pratique a progressão pop clássica I-V-vi-IV (ex: C-G-Am-F). Esta é uma das progressões mais usadas em música popular.",
+  "type": "pratica-sequencia",
+  "asset": "assets/images/progressao_pop.png",
+  "successCriteria": "Tocar a progressão pop completa suavemente",
+  "sequence": ["C", "G", "Am", "F"],
+  "expectedChords": ["C", "G", "Am", "F"],
+  "xpReward": 90,
+  "expectedFrequencies": [],
+  "tolerance": 30
+}

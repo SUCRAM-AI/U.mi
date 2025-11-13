@@ -15,9 +15,9 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 
-const  Lyricsthink = require('../../assets/images/thinklyrics.png');
-import EmailIconSVG from '../../assets/images/user_icon.svg'; 
-import LogoUMISVG from '../../assets/images/logo_umi.svg';
+const  Lyricsthink = require('@assets/images/thinklyrics.png');
+import EmailIconSVG from '@assets/images/user_icon.svg'; 
+import LogoUMISVG from '@assets/images/logo_umi.svg';
 
 const { width, height } = Dimensions.get('window');
 
@@ -39,7 +39,7 @@ const PasswordRecoveryScreen = () => {
             Alert.alert(
                 'Email enviado!', 
                 'Verifique sua caixa de entrada para redefinir sua senha.',
-                [{ text: 'OK', onPress: () => router.push('/(tabs)/login') }]
+                [{ text: 'OK', onPress: () => router.push('/login') }]
             );
         }, 1500);
     };
@@ -118,7 +118,7 @@ const PasswordRecoveryScreen = () => {
                             {/* Back to Login Link */}
                             <TouchableOpacity 
                                 style={styles.voltarAoLoginContainer}
-                                onPress={() => router.push('/(tabs)/login')}
+                                onPress={() => router.push('/login')}
                             >
                                 <Text style={styles.voltarAoLogin}>
                                     Voltar ao login

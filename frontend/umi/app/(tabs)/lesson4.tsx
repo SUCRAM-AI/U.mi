@@ -14,9 +14,9 @@ import {
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Audio } from 'expo-av';
-import { useAuth } from '../../contexts/AuthContext';
-import { useAudioRecorder } from '../../hooks/use-audio-recorder';
-import { detectChord, compareChords } from '../../services/api';
+import { useAuth } from '@contexts/AuthContext';
+import { useAudioRecorder } from '@hooks/use-audio-recorder';
+import { detectChord, compareChords } from '@services/api';
 
 // Componente Header Reutilizável
 interface HeaderProps {

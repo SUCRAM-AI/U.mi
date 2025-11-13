@@ -1,0 +1,16 @@
+{
+  "id": "3.4",
+  "section": "2",
+  "unit": "3",
+  "lesson": "3.4",
+  "title": "Pivô Em ↔ Am",
+  "description": "Pratique a transição entre Em e Am. Muitas músicas usam esses dois acordes como base.",
+  "type": "pratica-sequencia",
+  "asset": "assets/images/transicao_em_am.png",
+  "successCriteria": "Tocar a transição Em-Am-Em-Am suavemente",
+  "sequence": ["Em", "Am", "Em", "Am"],
+  "expectedChords": ["Em", "Am", "Em", "Am"],
+  "xpReward": 70,
+  "expectedFrequencies": [],
+  "tolerance": 30
+}

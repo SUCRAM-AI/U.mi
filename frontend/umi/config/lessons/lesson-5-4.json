@@ -1,0 +1,21 @@
+{
+  "id": "5.4",
+  "section": "3",
+  "unit": "5",
+  "lesson": "5.4",
+  "title": "Símbolos Rítmicos",
+  "description": "Aprenda os símbolos básicos de notação rítmica: semínima, mínima, colcheia e suas pausas.",
+  "type": "teoria",
+  "asset": "assets/images/simbolos_ritmicos.png",
+  "successCriteria": "Identificar e entender os símbolos rítmicos básicos",
+  "content": [
+    "Semínima (♩): 1 batida",
+    "Mínima (♩♩): 2 batidas",
+    "Colcheia (♪): 1/2 batida",
+    "Pausa de semínima: 1 batida de silêncio",
+    "Pausa de mínima: 2 batidas de silêncio"
+  ],
+  "xpReward": 50,
+  "expectedFrequencies": [],
+  "tolerance": 20
+}

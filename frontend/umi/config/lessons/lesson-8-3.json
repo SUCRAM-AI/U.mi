@@ -1,0 +1,16 @@
+{
+  "id": "8.3",
+  "section": "4",
+  "unit": "8",
+  "lesson": "8.3",
+  "title": "Troca G ↔ C",
+  "description": "Pratique a transição entre G e C. Estas duas progressões são fundamentais em música popular.",
+  "type": "pratica-sequencia",
+  "asset": "assets/images/transicao_g_c.png",
+  "successCriteria": "Tocar a transição G-C-G-C suavemente",
+  "sequence": ["G", "C", "G", "C"],
+  "expectedChords": ["G", "C", "G", "C"],
+  "xpReward": 70,
+  "expectedFrequencies": [],
+  "tolerance": 30
+}

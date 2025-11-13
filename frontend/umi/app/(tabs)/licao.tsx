@@ -11,17 +11,17 @@ import {
     Alert,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '@contexts/AuthContext';
 import { Audio } from 'expo-av';
 
-import VoltarSVG from '../../assets/images/voltar.svg';
-import Iconemusica from '../../assets/images/iconmusic.svg';
-import Estrela1 from '../../assets/images/ystar.svg'
-import Estrela2 from '../../assets/images/star.svg'
-import Play from '../../assets/images/play.svg'
-import ConcluirSVG from  '../../assets/images/concluir.svg' 
-const lyricslicao = require('../../assets/images/lyricslicao.png');
-const acordes = require('../../assets/images/acordes.png');
+import VoltarSVG from '@assets/images/voltar.svg';
+import Iconemusica from '@assets/images/iconmusic.svg';
+import Estrela1 from '@assets/images/ystar.svg'
+import Estrela2 from '@assets/images/star.svg'
+import Play from '@assets/images/play.svg'
+import ConcluirSVG from  '@assets/images/concluir.svg' 
+const lyricslicao = require('@assets/images/lyricslicao.png');
+const acordes = require('@assets/images/acordes.png');
 
 
 const LicaoAcordesMaioresScreen = () => {

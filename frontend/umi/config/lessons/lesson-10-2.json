@@ -1,0 +1,17 @@
+{
+  "id": "10.2",
+  "section": "5",
+  "unit": "10",
+  "lesson": "10.2",
+  "title": "Ensaio do Verso",
+  "description": "Pratique tocar o verso de uma música completa. Comece em velocidade reduzida para dominar as transições.",
+  "type": "pratica-sequencia",
+  "asset": "assets/images/ensaio_verso.png",
+  "successCriteria": "Tocar o verso completo com precisão",
+  "sequence": ["C", "G", "Am", "F", "C", "G", "Am", "F"],
+  "expectedChords": ["C", "G", "Am", "F", "C", "G", "Am", "F"],
+  "tempo": 80,
+  "xpReward": 80,
+  "expectedFrequencies": [],
+  "tolerance": 30
+}

@@ -1,14 +1,14 @@
 import React, {useState} from "react";
 import { SafeAreaView, View, ScrollView, ImageBackground, Image, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from "react-native";
 import { useRouter } from 'expo-router';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '@contexts/AuthContext';
 
 // importações das imagens locais
-const HeaderBackground = require('../../assets/images/header_bg.png');
-const LogoImage = require('../../assets/images/logo.png');
+const HeaderBackground = require('@assets/images/header_bg.png');
+const LogoImage = require('@assets/images/logo.png');
 
-import UserIconSVG from '../../assets/images/user_icon.svg';
-import PasswordIconSVG from '../../assets/images/passwordicon.svg'; 
+import UserIconSVG from '@assets/images/user_icon.svg';
+import PasswordIconSVG from '@assets/images/passwordicon.svg'; 
 
 export default () => {
     const [email, setEmail] = useState('');
@@ -27,7 +27,7 @@ export default () => {
         try {
             const success = await login(email, password);
             if (success) {
-                router.replace('/(tabs)/trilha');
+                router.replace('/nivel');
             } else {
                 Alert.alert('Erro', 'Não foi possível fazer login');
             }
@@ -42,7 +42,7 @@ export default () => {
         setIsLoading(true);
         try {
             await login('convidado@umi.com', '');
-            router.replace('/(tabs)/trilha');
+            router.replace('/nivel');
         } catch (error) {
             Alert.alert('Erro', 'Ocorreu um erro');
         } finally {
@@ -119,7 +119,7 @@ export default () => {
                         </View>
                     </View>
                     <View style={styles.view3}>
-                        <TouchableOpacity onPress={() => router.push('/(tabs)/senha')}>
+                        <TouchableOpacity onPress={() => router.push('/senha')}>
                             <View style={styles.view4}>
                                 <Text style={styles.text6}>
                                     {"Esqueceu sua senha?"}
@@ -147,7 +147,7 @@ export default () => {
                     </View>
                     <TouchableOpacity 
                         style={styles.button2} 
-                        onPress={() => router.push('/(tabs)/cadastro')}
+                        onPress={() => router.push('/cadastro')}
                     >
                         <Text style={styles.text9}>
                             {"Cadastrar"}

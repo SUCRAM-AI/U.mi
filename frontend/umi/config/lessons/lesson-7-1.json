@@ -1,0 +1,21 @@
+{
+  "id": "7.1",
+  "section": "4",
+  "unit": "7",
+  "lesson": "7.1",
+  "title": "Corda X",
+  "description": "Aprenda sobre a corda X (corda mudo). É usada para criar ritmo percussivo em muitos estilos populares.",
+  "type": "teoria",
+  "asset": "assets/images/corda_x.png",
+  "successCriteria": "Compreender o uso da corda X",
+  "content": [
+    "A corda X na tablatura significa tocar a corda abafada",
+    "É usado para criar um som percussivo",
+    "Segure levemente as cordas sem pressioná-las completamente",
+    "A corda X é muito comum em ritmos de rock e pop",
+    "Pratique alternando entre cordas tocadas e abafadas"
+  ],
+  "xpReward": 40,
+  "expectedFrequencies": [],
+  "tolerance": 20
+}

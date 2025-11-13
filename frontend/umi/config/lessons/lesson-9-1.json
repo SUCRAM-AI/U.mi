@@ -1,0 +1,21 @@
+{
+  "id": "9.1",
+  "section": "5",
+  "unit": "9",
+  "lesson": "9.1",
+  "title": "Mapa da Escala",
+  "description": "Explore o mapa completo da escala maior no braço do violão. Entenda como as notas se organizam em todo o braço.",
+  "type": "teoria",
+  "asset": "assets/images/mapa_escala.png",
+  "successCriteria": "Compreender o padrão da escala maior no braço",
+  "content": [
+    "A escala maior segue um padrão de tons e semitons",
+    "Padrão: Tom-Tom-Semitom-Tom-Tom-Tom-Semitom",
+    "Cada escala pode ser tocada em qualquer posição do braço",
+    "O mesmo padrão se repete em diferentes oitavas",
+    "Conhecer o mapa da escala ajuda na improvisação e composição"
+  ],
+  "xpReward": 60,
+  "expectedFrequencies": [],
+  "tolerance": 20
+}

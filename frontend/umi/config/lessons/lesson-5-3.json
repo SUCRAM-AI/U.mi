@@ -1,0 +1,16 @@
+{
+  "id": "5.3",
+  "section": "3",
+  "unit": "5",
+  "lesson": "5.3",
+  "title": "Batida Cima",
+  "description": "Pratique a batida ascendente (strumming para cima). Combina com batidas descendentes para criar ritmos completos.",
+  "type": "strumming",
+  "asset": "assets/images/batida_cima.png",
+  "successCriteria": "Executar batidas ascendentes consistentes",
+  "pattern": ["↑", "↑", "↑", "↑"],
+  "tempo": 100,
+  "xpReward": 60,
+  "expectedFrequencies": [],
+  "tolerance": 20
+}

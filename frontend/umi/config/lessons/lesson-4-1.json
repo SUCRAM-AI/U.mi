@@ -1,0 +1,30 @@
+{
+  "id": "4.1",
+  "section": "2",
+  "unit": "4",
+  "lesson": "4.1",
+  "title": "Menor vs Maior",
+  "description": "Aprenda a diferença entre acordes maiores e menores. Ouça exemplos e identifique a diferença sonora.",
+  "type": "quiz-audio",
+  "asset": "assets/images/maior_menor.png",
+  "successCriteria": "Identificar corretamente acordes maiores e menores",
+  "quiz": {
+    "questions": [
+      {
+        "question": "Este acorde é maior ou menor?",
+        "audioUri": "assets/audio/acorde_maior.mp3",
+        "options": ["Maior", "Menor"],
+        "correctAnswer": "Maior"
+      },
+      {
+        "question": "Este acorde é maior ou menor?",
+        "audioUri": "assets/audio/acorde_menor.mp3",
+        "options": ["Maior", "Menor"],
+        "correctAnswer": "Menor"
+      }
+    ]
+  },
+  "xpReward": 60,
+  "expectedFrequencies": [],
+  "tolerance": 20
+}

@@ -1,0 +1,17 @@
+{
+  "id": "6.2",
+  "section": "3",
+  "unit": "6",
+  "lesson": "6.2",
+  "title": "Sincronia",
+  "description": "Pratique manter o ritmo enquanto troca de acordes. A sincronia entre mão direita (ritmo) e esquerda (acordes) é fundamental.",
+  "type": "pratica-ritmo",
+  "asset": "assets/images/sincronia.png",
+  "successCriteria": "Manter ritmo constante durante trocas de acordes",
+  "sequence": ["Em", "Am", "Em", "Am"],
+  "pattern": ["↓", "↑", "↓", "↑"],
+  "tempo": 100,
+  "xpReward": 80,
+  "expectedFrequencies": [],
+  "tolerance": 30
+}

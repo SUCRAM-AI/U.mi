@@ -1,0 +1,16 @@
+{
+  "id": "5.2",
+  "section": "3",
+  "unit": "5",
+  "lesson": "5.2",
+  "title": "Batida Baixo",
+  "description": "Pratique a batida descendente (strumming para baixo). É a base de muitos ritmos.",
+  "type": "strumming",
+  "asset": "assets/images/batida_baixo.png",
+  "successCriteria": "Executar batidas descendentes consistentes",
+  "pattern": ["↓", "↓", "↓", "↓"],
+  "tempo": 100,
+  "xpReward": 60,
+  "expectedFrequencies": [],
+  "tolerance": 20
+}

@@ -2,29 +2,29 @@ import React from 'react';
 import { StyleSheet, View, Text, Image, ScrollView, Platform, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '@contexts/AuthContext';
 
 
 // Recursos SVG (Importados como Componentes)
-import MascoteProgresso from '../../assets/images/trilhalyrics.svg';
-import LinhaDaTrilha from '../../assets/images/linhatrilha.svg';
-import IconeNota from '../../assets/images/iconmusic.svg';
-import BadgeEstrela from '../../assets/images/3star.svg'; // Badge de estrela unificado
-import IconeIntervalos from '../../assets/images/clock.svg';
-import IconeEscalas from '../../assets/images/escalas.svg';
-import IconeAcordes from '../../assets/images/acordesb.svg';
-import IconeCadeadoCinza from '../../assets/images/cadeadocinza.svg'; // Usado no círculo de acordes
-import IconeHarmonia from '../../assets/images/harmonia.svg';
-import IconeCadeadoHarmonia from '../../assets/images/cadeadocinza.svg'; // Usado no círculo de harmonia
-import IconeProgresso from '../../assets/images/progresso.svg'; // Lição 3
-import IconeBloqueio from '../../assets/images/cadeadobranco.svg'; 
-import MenuIcon from '../../assets/images/config.svg'; // Menu Header
-import IconeConfig from '../../assets/images/people.svg'; // Config Header
-import Iconeloja from '../../assets/images/loja.svg';
-import IconeNotas from '../../assets/images/icongray.svg';
-import Perfilp from '../../assets/images/perfilp.svg';
-import TrilhaIcon from '../../assets/images/trilhateorica.svg'; 
-import BottomNav from '../../components/ui/bottom-nav';
+import MascoteProgresso from '@assets/images/trilhalyrics.svg';
+import LinhaDaTrilha from '@assets/images/linhatrilha.svg';
+import IconeNota from '@assets/images/iconmusic.svg';
+import BadgeEstrela from '@assets/images/3star.svg'; // Badge de estrela unificado
+import IconeIntervalos from '@assets/images/clock.svg';
+import IconeEscalas from '@assets/images/escalas.svg';
+import IconeAcordes from '@assets/images/acordesb.svg';
+import IconeCadeadoCinza from '@assets/images/cadeadocinza.svg'; // Usado no círculo de acordes
+import IconeHarmonia from '@assets/images/harmonia.svg';
+import IconeCadeadoHarmonia from '@assets/images/cadeadocinza.svg'; // Usado no círculo de harmonia
+import IconeProgresso from '@assets/images/progresso.svg'; // Lição 3
+import IconeBloqueio from '@assets/images/cadeadobranco.svg'; 
+import MenuIcon from '@assets/images/config.svg'; // Menu Header
+import IconeConfig from '@assets/images/people.svg'; // Config Header
+import Iconeloja from '@assets/images/loja.svg';
+import IconeNotas from '@assets/images/icongray.svg';
+import Perfilp from '@assets/images/perfilp.svg';
+import TrilhaIcon from '@assets/images/trilhateorica.svg'; 
+import BottomNav from '@components/ui/bottom-nav';
 
 const TrilhaTeoria = () => {
   const router = useRouter();
@@ -33,8 +33,15 @@ const TrilhaTeoria = () => {
   const progressPercentage = user ? (user.lessonsCompleted / 5) * 100 : 0;
   
   const handleLessonClick = (lessonNumber: number) => {
+    // Mapear número da lição para ID do formato section.unit
+    // Lição 1 = 1.1, Lição 2 = 1.2, etc.
+    // Por enquanto, usar as lições antigas para compatibilidade
     if (lessonNumber <= 3) {
       router.push('/(tabs)/licao');
+    } else {
+      // Usar o novo sistema de lições
+      const lessonId = `1.${lessonNumber}`;
+      router.push(`/lesson/${lessonId}`);
     }
   };
   
@@ -58,6 +65,13 @@ const TrilhaTeoria = () => {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.container}>
           <View style={styles.main}>
+            {/* Botão de teste temporário - remover depois */}
+            <TouchableOpacity
+              style={styles.testButton}
+              onPress={() => router.push('/(tabs)/test-lessons')}
+            >
+              <Text style={styles.testButtonText}>🧪 Testar Todas as Lições</Text>
+            </TouchableOpacity>
             {/* Bloco de Progresso */}
             <View style={styles.background}>
               <MascoteProgresso
@@ -627,6 +641,28 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     position: 'absolute',
     top: 50,
+  },
+  // Botão de teste
+  testButton: {
+    backgroundColor: '#F97316',
+    borderRadius: 12,
+    padding: 16,
+    marginTop: 16,
+    marginBottom: 24,
+    marginHorizontal: 0,
+    alignItems: 'center',
+    shadowColor: '#F97316',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
+    width: '100%',
+  },
+  testButtonText: {
+    fontSize: 16,
+    fontFamily: 'Lexend-Bold',
+    fontWeight: '700',
+    color: '#ffffff',
   },
 });
 

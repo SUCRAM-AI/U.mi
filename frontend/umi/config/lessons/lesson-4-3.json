@@ -1,0 +1,21 @@
+{
+  "id": "4.3",
+  "section": "2",
+  "unit": "4",
+  "lesson": "4.3",
+  "title": "Matemática da Terça",
+  "description": "Entenda como a terça define se um acorde é maior ou menor. Terça maior = acorde maior, terça menor = acorde menor.",
+  "type": "teoria",
+  "asset": "assets/images/terca_maior_menor.png",
+  "successCriteria": "Compreender a diferença entre terça maior e menor",
+  "content": [
+    "A terça é o intervalo entre a tônica e a terceira nota da escala",
+    "Terça maior: 4 semitons (ex: Dó → Mi)",
+    "Terça menor: 3 semitons (ex: Dó → Mi♭)",
+    "Acorde maior = tônica + terça maior + quinta",
+    "Acorde menor = tônica + terça menor + quinta"
+  ],
+  "xpReward": 50,
+  "expectedFrequencies": [],
+  "tolerance": 20
+}

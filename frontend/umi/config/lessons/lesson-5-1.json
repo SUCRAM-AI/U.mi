@@ -1,0 +1,15 @@
+{
+  "id": "5.1",
+  "section": "3",
+  "unit": "5",
+  "lesson": "5.1",
+  "title": "Metrônomo Humano",
+  "description": "Desenvolva seu senso de ritmo tocando na tela em um ritmo constante. Pratique manter o tempo sem um metrônomo externo.",
+  "type": "aquecimento",
+  "asset": "assets/images/metronomo_humano.png",
+  "successCriteria": "Manter um ritmo constante com pelo menos 80% de precisão",
+  "targetBPM": 120,
+  "xpReward": 50,
+  "expectedFrequencies": [],
+  "tolerance": 20
+}

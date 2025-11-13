@@ -1,0 +1,17 @@
+{
+  "id": "9.3",
+  "section": "5",
+  "unit": "9",
+  "lesson": "9.3",
+  "title": "Ritmo + Acordes",
+  "description": "Combine ritmo e acordes. Pratique tocar acordes com diferentes padrões rítmicos.",
+  "type": "pratica-ritmo",
+  "asset": "assets/images/ritmo_acordes.png",
+  "successCriteria": "Manter ritmo constante enquanto toca acordes",
+  "sequence": ["C", "G", "Am", "F"],
+  "pattern": ["↓", "↑", "↓", "↑"],
+  "tempo": 120,
+  "xpReward": 100,
+  "expectedFrequencies": [],
+  "tolerance": 30
+}

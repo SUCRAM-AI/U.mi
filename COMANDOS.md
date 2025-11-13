@@ -29,11 +29,11 @@ O backend estará disponível em:
 
 ---
 
-## 📱 Frontend (React Native - Expo)
+## 📱 Frontend (React - Vite)
 
 ### 1. Navegar para a pasta do frontend
 ```bash
-cd frontend/umi
+cd frontend
 ```
 
 ### 2. Instalar dependências (primeira vez)
@@ -43,35 +43,20 @@ npm install
 yarn install
 ```
 
-### 3. Executar o frontend
-
-**Opção 1: Iniciar servidor de desenvolvimento**
-```bash
-npm start
-# ou
-yarn start
+### 3. Configurar variáveis de ambiente
+Crie um arquivo `.env` na pasta `frontend` com:
+```env
+VITE_API_URL=http://localhost:5000/api
 ```
 
-**Opção 2: Executar no Android**
+### 4. Executar o frontend
 ```bash
-npm run android
+npm run dev
 # ou
-yarn android
+yarn dev
 ```
 
-**Opção 3: Executar no iOS**
-```bash
-npm run ios
-# ou
-yarn ios
-```
-
-**Opção 4: Executar na Web**
-```bash
-npm run web
-# ou
-yarn web
-```
+O frontend estará disponível em `http://localhost:5173` (ou outra porta se 5173 estiver ocupada)
 
 ---
 
@@ -85,8 +70,8 @@ python api.py
 
 ### Terminal 2 - Frontend
 ```bash
-cd frontend/umi
-npm start
+cd frontend
+npm run dev
 ```
 
 ---
@@ -107,9 +92,9 @@ Deve retornar:
 ```
 
 ### Testar Frontend
-1. Abra o app no dispositivo/emulador
-2. Navegue até a tela de lição
-3. Tente gravar um áudio e detectar o acorde
+1. Abra o navegador em `http://localhost:5173`
+2. Navegue até `/apprentice` para testar gravação de áudio
+3. Navegue até `/music` para testar upload de arquivos
 
 ---
 
@@ -136,7 +121,8 @@ Deve retornar:
 ## 📝 Notas Importantes
 
 1. **Backend deve estar rodando antes do frontend** para que a API esteja disponível
-2. **IP da API:** O IP `192.168.0.7` no `services/api.ts` deve corresponder ao IP da sua máquina
+2. **Variáveis de ambiente:** Configure `VITE_API_URL` no arquivo `.env` do frontend
 3. **Porta 5000:** Certifique-se de que a porta 5000 não está sendo usada por outro processo
-4. **Firewall:** Permita conexões na porta 5000 se estiver usando dispositivo físico
+4. **Formato de áudio:** Gravações do navegador são em WebM - o backend pode precisar de conversão para WAV/MP3
+5. **HTTPS:** Em produção, HTTPS é necessário para acesso ao microfone (exceto localhost)
 

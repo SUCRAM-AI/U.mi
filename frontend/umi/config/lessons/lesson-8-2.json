@@ -1,0 +1,15 @@
+{
+  "id": "8.2",
+  "section": "4",
+  "unit": "8",
+  "lesson": "8.2",
+  "title": "Dó Maior (C)",
+  "description": "Pratique tocar o acorde C (Dó maior). Complete o conjunto dos acordes básicos mais comuns.",
+  "type": "pratica-microfone",
+  "asset": "assets/images/acorde_c.png",
+  "successCriteria": "Tocar o acorde C corretamente",
+  "expectedChord": "C",
+  "xpReward": 60,
+  "expectedFrequencies": [261.63, 246.94, 196.00, 146.83, 110.00, 82.41],
+  "tolerance": 25
+}

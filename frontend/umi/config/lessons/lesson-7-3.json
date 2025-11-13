@@ -1,0 +1,16 @@
+{
+  "id": "7.3",
+  "section": "4",
+  "unit": "7",
+  "lesson": "7.3",
+  "title": "Progressão D-A-E",
+  "description": "Pratique a progressão D-A-E. Esta é uma progressão muito comum em música popular.",
+  "type": "pratica-sequencia",
+  "asset": "assets/images/progressao_d_a_e.png",
+  "successCriteria": "Tocar a progressão D-A-E suavemente",
+  "sequence": ["D", "A", "E", "A", "D"],
+  "expectedChords": ["D", "A", "E", "A", "D"],
+  "xpReward": 80,
+  "expectedFrequencies": [],
+  "tolerance": 30
+}

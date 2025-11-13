@@ -1,0 +1,15 @@
+{
+  "id": "8.1",
+  "section": "4",
+  "unit": "8",
+  "lesson": "8.1",
+  "title": "Sol Maior (G)",
+  "description": "Pratique tocar o acorde G (Sol maior). É um dos acordes mais importantes e usados em música popular.",
+  "type": "pratica-microfone",
+  "asset": "assets/images/acorde_g.png",
+  "successCriteria": "Tocar o acorde G corretamente",
+  "expectedChord": "G",
+  "xpReward": 60,
+  "expectedFrequencies": [392.00, 246.94, 196.00, 146.83, 110.00, 82.41],
+  "tolerance": 25
+}

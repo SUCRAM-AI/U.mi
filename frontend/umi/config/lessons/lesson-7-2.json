@@ -1,0 +1,15 @@
+{
+  "id": "7.2",
+  "section": "4",
+  "unit": "7",
+  "lesson": "7.2",
+  "title": "Construindo D",
+  "description": "Pratique tocar o acorde D (Ré maior). É um acorde fundamental usado em muitas progressões populares.",
+  "type": "pratica-microfone",
+  "asset": "assets/images/acorde_d.png",
+  "successCriteria": "Tocar o acorde D corretamente",
+  "expectedChord": "D",
+  "xpReward": 60,
+  "expectedFrequencies": [293.66, 246.94, 196.00, 146.83, 110.00, 82.41],
+  "tolerance": 25
+}

@@ -1,0 +1,15 @@
+{
+  "id": "3.2",
+  "section": "2",
+  "unit": "3",
+  "lesson": "3.2",
+  "title": "Acorde Em",
+  "description": "Pratique tocar o acorde Em (Mi menor). É um dos acordes mais fáceis e usados na guitarra.",
+  "type": "pratica-microfone",
+  "asset": "assets/images/acorde_em.png",
+  "successCriteria": "Tocar o acorde Em corretamente",
+  "expectedChord": "Em",
+  "xpReward": 60,
+  "expectedFrequencies": [329.63, 246.94, 196.00, 146.83, 110.00, 82.41],
+  "tolerance": 25
+}

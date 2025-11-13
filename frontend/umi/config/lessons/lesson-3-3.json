@@ -1,0 +1,15 @@
+{
+  "id": "3.3",
+  "section": "2",
+  "unit": "3",
+  "lesson": "3.3",
+  "title": "Acorde Am",
+  "description": "Pratique tocar o acorde Am (Lá menor). Similar ao Em, mas com uma posição diferente.",
+  "type": "pratica-microfone",
+  "asset": "assets/images/acorde_am.png",
+  "successCriteria": "Tocar o acorde Am corretamente",
+  "expectedChord": "Am",
+  "xpReward": 60,
+  "expectedFrequencies": [329.63, 246.94, 196.00, 146.83, 110.00, 82.41],
+  "tolerance": 25
+}

@@ -1,5 +1,7 @@
 import React from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { useRouter, useSegments } from 'expo-router';
+
 // botão de navegação
 type IconComponent = React.ComponentType<any> | undefined;
 
@@ -14,27 +16,87 @@ export default function BottomNav({
   Iconeloja?: IconComponent;
   Perfilp?: IconComponent;
 }) {
+  const router = useRouter();
+  const segments = useSegments();
+
+  const isActive = (path: string) => {
+    const currentPath = `/${segments.join('/')}`;
+    return currentPath.includes(path);
+  };
+
+  const getNavTextStyle = (path: string) => {
+    return [styles.navText, isActive(path) && styles.activeText];
+  };
+
+  const getNavIconStyle = (path: string) => {
+    return [styles.navIconStyle, isActive(path) && styles.activeIcon];
+  };
+
   return (
     <View style={styles.nav}>
       <View style={styles.container3}>
-        <TouchableOpacity style={styles.link}>
-          {TrilhaIcon ? <TrilhaIcon width={24} height={28} style={styles.navIconStyle} /> : <Text>📚</Text>}
-          <Text style={styles.navText}>Trilha Teórica</Text>
+        <TouchableOpacity 
+          style={styles.link}
+          onPress={() => router.push('/(tabs)/trilha')}
+        >
+          {TrilhaIcon ? (
+            <TrilhaIcon 
+              width={24} 
+              height={28} 
+              style={getNavIconStyle('/trilha')} 
+            />
+          ) : (
+            <Text>📚</Text>
+          )}
+          <Text style={getNavTextStyle('/trilha')}>Trilha Teórica</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.link2}>
-          {IconeNotas ? <IconeNotas width={24} height={28} style={styles.navIconStyle} /> : <Text>🎶</Text>}
-          <Text style={styles.navText}>Música</Text>
+        <TouchableOpacity 
+          style={styles.link2}
+          onPress={() => router.push('/(tabs)/musica')}
+        >
+          {IconeNotas ? (
+            <IconeNotas 
+              width={24} 
+              height={28} 
+              style={getNavIconStyle('/musica')} 
+            />
+          ) : (
+            <Text>🎶</Text>
+          )}
+          <Text style={getNavTextStyle('/musica')}>Música</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.link3}>
-          {Iconeloja ? <Iconeloja width={24} height={28} style={styles.navIconStyle} /> : <Text>🛒</Text>}
-          <Text style={styles.navText}>Loja</Text>
+        <TouchableOpacity 
+          style={styles.link3}
+          onPress={() => router.push('/(tabs)/loja')}
+        >
+          {Iconeloja ? (
+            <Iconeloja 
+              width={24} 
+              height={28} 
+              style={getNavIconStyle('/loja')} 
+            />
+          ) : (
+            <Text>🛒</Text>
+          )}
+          <Text style={getNavTextStyle('/loja')}>Loja</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.link4}>
-          {Perfilp ? <Perfilp width={24} height={28} style={styles.navIconStyle} /> : <Text>👤</Text>}
-          <Text style={styles.navText}>Perfil</Text>
+        <TouchableOpacity 
+          style={styles.link4}
+          onPress={() => router.push('/(tabs)/perfil')}
+        >
+          {Perfilp ? (
+            <Perfilp 
+              width={24} 
+              height={28} 
+              style={getNavIconStyle('/perfil')} 
+            />
+          ) : (
+            <Text>👤</Text>
+          )}
+          <Text style={getNavTextStyle('/perfil')}>Perfil</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -66,6 +128,7 @@ const styles = StyleSheet.create({
   link3: { alignItems: 'center', width: 65 },
   link4: { alignItems: 'center', width: 55 },
   navIconStyle: { marginBottom: 4, color: 'rgba(51, 51, 51, 0.7)' },
+  activeIcon: { color: '#7C3AED' },
   navText: { color: 'rgba(51, 51, 51, 0.7)', fontSize: 12, fontWeight: '500' },
-  activeText: { color: '#8A2BE2' },
+  activeText: { color: '#7C3AED', fontWeight: '700' },
 });

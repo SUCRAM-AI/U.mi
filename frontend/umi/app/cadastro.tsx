@@ -1,14 +1,14 @@
 import React, {useState} from "react";
 import { SafeAreaView, View, ScrollView, ImageBackground, Image, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from "react-native";
 import { useRouter } from 'expo-router';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '@contexts/AuthContext';
 
-import LogoUMISVG from '../../assets/images/logo_umi.svg';
-import UserIconSVG from '../../assets/images/user_icon.svg';
-import PasswordIconSVG from '../../assets/images/passwordicon.svg';
+import LogoUMISVG from '@assets/images/logo_umi.svg';
+import UserIconSVG from '@assets/images/user_icon.svg';
+import PasswordIconSVG from '@assets/images/passwordicon.svg';
 
 //importações das imagens locais 
-const lyricsbosque = require('../../assets/images/lyrics2.png'); 
+const lyricsbosque = require('@assets/images/lyrics2.png'); 
 
 
 export default function RegisterScreen() {
@@ -45,8 +45,8 @@ export default function RegisterScreen() {
         try {
             const success = await register(name, email, password);
             if (success) {
-                Alert.alert('Sucesso', 'Conta criada com sucesso!', [
-                    { text: 'OK', onPress: () => router.replace('/(tabs)/trilha') }
+                Alert.alert('Sucesso', 'Conta criada com sucesso! Agora faça login.', [
+                    { text: 'OK', onPress: () => router.replace('/login') }
                 ]);
             } else {
                 Alert.alert('Erro', 'Este email já está cadastrado');
@@ -171,7 +171,7 @@ export default function RegisterScreen() {
                     {/*Link para Login */}
                     <View style={styles.loginLinkContainer}>
                         <Text style={styles.loginLinkText}>Já tenho uma conta?</Text>
-                        <TouchableOpacity onPress={() => router.push('/(tabs)/login')}>
+                        <TouchableOpacity onPress={() => router.push('/login')}>
                             <Text style={styles.loginLinkButton}>Entrar</Text>
                         </TouchableOpacity>
                     </View>

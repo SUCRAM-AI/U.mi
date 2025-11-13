@@ -15,9 +15,9 @@ import {
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Audio } from 'expo-av';
-import { useAuth } from '../../contexts/AuthContext';
-import { useAudioRecorder } from '../../hooks/use-audio-recorder';
-import { detectChord } from '../../services/api';
+import { useAuth } from '@contexts/AuthContext';
+import { useAudioRecorder } from '@hooks/use-audio-recorder';
+import { detectChord } from '@services/api';
 
 // Componente Header Reutilizável
 interface HeaderProps {
@@ -471,7 +471,7 @@ export default function Lesson3() {
               </View>
               {/* Em produção, substituir por: */}
               {/* <Image
-                source={require('../../assets/images/braco_violao_notas.png')}
+                source={require('@assets/images/braco_violao_notas.png')}
                 style={styles.bracoImage}
                 resizeMode="contain"
               /> */}

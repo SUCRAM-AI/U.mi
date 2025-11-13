@@ -1,0 +1,15 @@
+{
+  "id": "6.3",
+  "section": "3",
+  "unit": "6",
+  "lesson": "6.3",
+  "title": "Mudança no Tempo",
+  "description": "Pratique detectar mudanças no tempo e ajustar seu ritmo. Desenvolva sensibilidade para diferentes velocidades.",
+  "type": "pratica-ritmo",
+  "asset": "assets/images/mudanca_tempo.png",
+  "successCriteria": "Ajustar o ritmo conforme o tempo muda",
+  "tempos": [80, 100, 120, 140],
+  "xpReward": 70,
+  "expectedFrequencies": [],
+  "tolerance": 25
+}

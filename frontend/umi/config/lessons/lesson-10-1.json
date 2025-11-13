@@ -1,0 +1,21 @@
+{
+  "id": "10.1",
+  "section": "5",
+  "unit": "10",
+  "lesson": "10.1",
+  "title": "Estrutura da Música",
+  "description": "Aprenda sobre a estrutura básica de uma música: verso, refrão, ponte. Entenda como as progressões se organizam em uma canção.",
+  "type": "teoria",
+  "asset": "assets/images/estrutura_musica.png",
+  "successCriteria": "Compreender a estrutura básica de uma música",
+  "content": [
+    "Verso: geralmente usa progressões mais simples, apresenta a história",
+    "Refrão: parte mais memorável, muitas vezes usa a progressão principal",
+    "Ponte: contraste, conecta verso e refrão",
+    "Muitas músicas pop seguem: Verso-Refrão-Verso-Refrão-Ponte-Refrão",
+    "Entender a estrutura ajuda a tocar músicas completas"
+  ],
+  "xpReward": 50,
+  "expectedFrequencies": [],
+  "tolerance": 20
+}
