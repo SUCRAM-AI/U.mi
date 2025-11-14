@@ -7,6 +7,7 @@
   "description": "Introdução à leitura de tablatura (tab). Aprenda a ler os números nas linhas que representam as cordas e os trastes a serem pressionados.",
   "type": "teoria",
   "asset": "assets/images/tablatura_exemplo.png",
+  "headerImage": "assets/images/lyricslicao.png",
   "successCriteria": "Compreender a estrutura básica de uma tablatura",
   "content": [
     "A tablatura mostra 6 linhas horizontais representando as 6 cordas do violão",

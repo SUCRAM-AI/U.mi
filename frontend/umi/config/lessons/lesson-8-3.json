@@ -7,6 +7,7 @@
   "description": "Pratique a transição entre G e C. Estas duas progressões são fundamentais em música popular.",
   "type": "pratica-sequencia",
   "asset": "assets/images/transicao_g_c.png",
+  "headerImage": "assets/images/lyricslicao.png",
   "successCriteria": "Tocar a transição G-C-G-C suavemente",
   "sequence": ["G", "C", "G", "C"],
   "expectedChords": ["G", "C", "G", "C"],

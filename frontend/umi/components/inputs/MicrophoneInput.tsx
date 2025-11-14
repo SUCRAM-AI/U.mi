@@ -7,7 +7,7 @@ import { View, Text, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 import { TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAudioRecorder } from '@hooks/use-audio-recorder';
-import { detectChord } from '@services/api';
+import { detectChord, normalizeChord } from '@services/api';
 
 interface MicrophoneInputProps {
   onDetect?: (result: { chord: string; success: boolean }) => void;
@@ -50,17 +50,22 @@ export function MicrophoneInput({
       const result = await detectChord(uri);
       
       if (result.success && result.chord) {
+        // Normalizar ambos os acordes para comparação
+        const normalizedDetected = normalizeChord(result.chord);
+        const normalizedExpected = expectedChord ? normalizeChord(expectedChord) : '';
+        
         const isCorrect = expectedChord 
-          ? result.chord.toLowerCase().includes(expectedChord.toLowerCase()) ||
-            expectedChord.toLowerCase().includes(result.chord.toLowerCase())
+          ? normalizedDetected === normalizedExpected ||
+            normalizedDetected.includes(normalizedExpected) ||
+            normalizedExpected.includes(normalizedDetected)
           : true;
 
-        onDetect?.({ chord: result.chord, success: isCorrect });
+        onDetect?.({ chord: normalizedDetected, success: isCorrect });
 
         if (expectedChord && !isCorrect) {
           Alert.alert(
             'Tente novamente',
-            `Detectado: ${result.chord}\nEsperado: ${expectedChord}`
+            `Detectado: ${normalizedDetected}\nEsperado: ${normalizedExpected}`
           );
         }
       } else {

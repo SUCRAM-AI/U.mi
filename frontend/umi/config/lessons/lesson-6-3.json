@@ -7,6 +7,7 @@
   "description": "Pratique detectar mudanças no tempo e ajustar seu ritmo. Desenvolva sensibilidade para diferentes velocidades.",
   "type": "pratica-ritmo",
   "asset": "assets/images/mudanca_tempo.png",
+  "headerImage": "assets/images/lyricslicao.png",
   "successCriteria": "Ajustar o ritmo conforme o tempo muda",
   "tempos": [80, 100, 120, 140],
   "xpReward": 70,

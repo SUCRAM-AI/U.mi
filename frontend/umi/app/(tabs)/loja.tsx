@@ -2,38 +2,66 @@
  * Tela de Loja - Para compras e upgrades (placeholder)
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   SafeAreaView,
+  TouchableOpacity,
+  Alert,
 } from 'react-native';
-import MenuIcon from '@assets/images/config.svg';
-import IconeConfig from '@assets/images/people.svg';
+import { useRouter } from 'expo-router';
+import { useAuth } from '@contexts/AuthContext';
+import MenuIcon from '@assets/images/people.svg';
+import IconeConfig from '@assets/images/config.svg';
 import IconeNotas from '@assets/images/icongray.svg';
 import Iconeloja from '@assets/images/loja.svg';
 import Perfilp from '@assets/images/perfilp.svg';
 import TrilhaIcon from '@assets/images/trilhateorica.svg';
 import BottomNav from '@components/ui/bottom-nav';
+import SettingsModal from '@components/settings-modal';
 
 export default function Loja() {
+  const router = useRouter();
+  const { logout } = useAuth();
+  const [settingsVisible, setSettingsVisible] = useState(false);
+
+  const handleSettingsPress = () => {
+    setSettingsVisible(true);
+  };
+
+  const handleCloseSettings = () => {
+    setSettingsVisible(false);
+  };
+
+  const handleAbout = () => {
+    setSettingsVisible(false);
+    Alert.alert('Sobre', 'U.Mi - Aplicativo de aprendizado musical');
+  };
+
+  const handleLogout = async () => {
+    setSettingsVisible(false);
+    await logout();
+    router.replace('/login');
+  };
+
   return (
     <View style={styles.container}>
       {/* Header Fixo */}
       <View style={styles.header}>
         <View style={styles.button2}>
           <View style={styles.headerIconContainer}>
-            <MenuIcon width={45} height={45} style={styles.headerIcon} />
+            <IconeConfig width={45} height={45} style={styles.headerIcon} />
           </View>
         </View>
         <Text style={styles.title}>Loja</Text>
-        <View style={styles.button3}>
+        <TouchableOpacity style={styles.button3} onPress={handleSettingsPress}>
           <View style={styles.headerIconContainer}>
             <IconeConfig width={32} height={32} style={styles.headerIcon} />
           </View>
-        </View>
+        </TouchableOpacity>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -51,6 +79,14 @@ export default function Loja() {
         IconeNotas={IconeNotas}
         Iconeloja={Iconeloja}
         Perfilp={Perfilp}
+      />
+
+      {/* Settings Modal */}
+      <SettingsModal
+        visible={settingsVisible}
+        onClose={handleCloseSettings}
+        onPressAbout={handleAbout}
+        onPressLogout={handleLogout}
       />
     </View>
   );

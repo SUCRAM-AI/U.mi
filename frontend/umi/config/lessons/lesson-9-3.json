@@ -7,6 +7,7 @@
   "description": "Combine ritmo e acordes. Pratique tocar acordes com diferentes padrões rítmicos.",
   "type": "pratica-ritmo",
   "asset": "assets/images/ritmo_acordes.png",
+  "headerImage": "assets/images/lyricslicao.png",
   "successCriteria": "Manter ritmo constante enquanto toca acordes",
   "sequence": ["C", "G", "Am", "F"],
   "pattern": ["↓", "↑", "↓", "↑"],

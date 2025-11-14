@@ -7,6 +7,7 @@
   "description": "Pratique manter o ritmo enquanto troca de acordes. A sincronia entre mão direita (ritmo) e esquerda (acordes) é fundamental.",
   "type": "pratica-ritmo",
   "asset": "assets/images/sincronia.png",
+  "headerImage": "assets/images/lyricslicao.png",
   "successCriteria": "Manter ritmo constante durante trocas de acordes",
   "sequence": ["Em", "Am", "Em", "Am"],
   "pattern": ["↓", "↑", "↓", "↑"],

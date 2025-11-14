@@ -7,6 +7,7 @@
   "description": "Pratique tocar o acorde D (Ré maior). É um acorde fundamental usado em muitas progressões populares.",
   "type": "pratica-microfone",
   "asset": "assets/images/acorde_d.png",
+  "headerImage": "assets/images/lyricslicao.png",
   "successCriteria": "Tocar o acorde D corretamente",
   "expectedChord": "D",
   "xpReward": 60,

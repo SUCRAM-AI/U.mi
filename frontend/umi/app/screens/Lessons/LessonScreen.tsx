@@ -13,6 +13,7 @@ import {
   Alert,
   SafeAreaView,
   StatusBar,
+  Image,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -29,6 +30,11 @@ import { RhythmPractice } from '@components/inputs/RhythmPractice';
 import { DiagramReader } from '@components/inputs/DiagramReader';
 import { TouchPractice } from '@components/inputs/TouchPractice';
 import { TheoryCard } from '@components/inputs/TheoryCard';
+
+// Mapeamento de imagens de cabeçalho
+const headerImages: Record<string, any> = {
+  'assets/images/lyricslicao.png': require('@assets/images/lyricslicao.png'),
+};
 
 interface LessonData {
   id: string;
@@ -54,6 +60,7 @@ interface LessonData {
   tempo?: number;
   targetBPM?: number;
   content?: string | string[];
+  headerImage?: string;
   [key: string]: any;
 }
 
@@ -66,6 +73,19 @@ export default function LessonScreen() {
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState(10);
   const [completed, setCompleted] = useState(false);
+  const [currentChordImage, setCurrentChordImage] = useState<string | undefined>(undefined);
+  const [detectedChordImage, setDetectedChordImage] = useState<string | undefined>(undefined);
+
+  // Mapeamento de acordes para imagens
+  const chordImageMap: Record<string, string> = {
+    'Em': 'assets/images/acorde_em.png',
+    'Am': 'assets/images/acorde_am.png',
+    'E': 'assets/images/acorde_e.png',
+    'A': 'assets/images/acorde_am.png', // Pode usar Am como fallback
+    'D': 'assets/images/acorde_d.png',
+    'G': 'assets/images/acorde_g.png',
+    'C': 'assets/images/acorde_c.png',
+  };
 
   // Garantir que lessonId seja string (pode vir como array do useLocalSearchParams)
   const lessonId = Array.isArray(params.lessonId) ? params.lessonId[0] : (params.lessonId as string);
@@ -91,6 +111,18 @@ export default function LessonScreen() {
       
       setLessonData(data);
       setProgress(10);
+      // Inicializar imagem do primeiro acorde se for sequência
+      if (data.type === 'pratica-sequencia' && data.sequence && data.sequence.length > 0) {
+        const firstChord = data.sequence[0];
+        const imagePath = chordImageMap[firstChord];
+        if (imagePath) {
+          setCurrentChordImage(imagePath);
+        }
+      } else {
+        setCurrentChordImage(undefined);
+      }
+      // Resetar imagem detectada ao carregar nova lição
+      setDetectedChordImage(undefined);
     } catch (error) {
       console.error('Erro ao carregar lição:', error);
       Alert.alert('Erro', 'Não foi possível carregar a lição');
@@ -139,15 +171,36 @@ export default function LessonScreen() {
         );
 
       case 'quiz-audio':
-        return lessonData.quiz ? (
-          <AudioQuiz
-            question={lessonData.quiz.question}
-            options={lessonData.quiz.options}
-            correctAnswer={lessonData.quiz.correctAnswer}
-            audioUri={lessonData.quiz.audioUri}
-            onComplete={handleComplete}
-          />
-        ) : null;
+        // Suporta tanto quiz.questions (array) quanto quiz (objeto único)
+        if (lessonData.quiz) {
+          if (Array.isArray(lessonData.quiz.questions) && lessonData.quiz.questions.length > 0) {
+            // Se for array de perguntas, pega a primeira
+            const firstQuestion = lessonData.quiz.questions[0];
+            return (
+              <AudioQuiz
+                question={firstQuestion.question || ''}
+                options={firstQuestion.options || []}
+                correctAnswer={firstQuestion.correctAnswer || ''}
+                audioUri={firstQuestion.audioUri}
+                image={lessonData.asset}
+                onComplete={handleComplete}
+              />
+            );
+          } else {
+            // Se for objeto único (estrutura antiga)
+            return (
+              <AudioQuiz
+                question={lessonData.quiz.question || ''}
+                options={lessonData.quiz.options || []}
+                correctAnswer={lessonData.quiz.correctAnswer || ''}
+                audioUri={lessonData.quiz.audioUri}
+                image={lessonData.asset}
+                onComplete={handleComplete}
+              />
+            );
+          }
+        }
+        return null;
 
       case 'teoria':
         return (
@@ -164,11 +217,20 @@ export default function LessonScreen() {
             <TheoryCard
               title={lessonData.title}
               content={lessonData.description}
-              image={lessonData.asset}
+              image={detectedChordImage || lessonData.asset}
             />
             <MicrophoneInput
               expectedChord={lessonData.expectedChord}
-              onDetect={(result) => handleComplete(result.success)}
+              onDetect={(result: { chord: string; success: boolean }) => {
+                // Atualizar imagem baseada no acorde detectado
+                if (result.chord) {
+                  const imagePath = chordImageMap[result.chord];
+                  if (imagePath) {
+                    setDetectedChordImage(imagePath);
+                  }
+                }
+                handleComplete(result.success);
+              }}
               label="Grave o acorde/nota"
               buttonText={lessonData.expectedChord ? `Tocar ${lessonData.expectedChord}` : 'Gravar'}
             />
@@ -181,13 +243,20 @@ export default function LessonScreen() {
             <TheoryCard
               title={lessonData.title}
               content={lessonData.description}
-              image={lessonData.asset}
+              image={currentChordImage || lessonData.asset}
             />
             <SequencePractice
               sequence={lessonData.sequence || []}
               onComplete={(results) => {
                 const allCorrect = results.every(r => r.correct);
                 handleComplete(allCorrect);
+              }}
+              onCurrentChordChange={(chord: string, index: number) => {
+                // Atualizar imagem baseada no acorde atual
+                const imagePath = chordImageMap[chord];
+                if (imagePath) {
+                  setCurrentChordImage(imagePath);
+                }
               }}
               title="Sequência de Acordes"
               instruction="Toque cada acorde na ordem exibida"
@@ -311,6 +380,18 @@ export default function LessonScreen() {
       
       {/* Header */}
       <View style={styles.header}>
+        {lessonData.headerImage && headerImages[lessonData.headerImage] && (
+          <Image
+            style={styles.headerBackgroundImage}
+            source={headerImages[lessonData.headerImage]}
+            resizeMode="cover"
+          />
+        )}
+        {lessonData.headerImage && (
+          <View style={styles.gradientOverlay} />
+        )}
+        
+        <View style={styles.headerTopRow}>
         <TouchableOpacity
           style={styles.headerButton}
           onPress={() => router.back()}
@@ -320,9 +401,10 @@ export default function LessonScreen() {
         
         <View style={styles.headerContent}>
           <Text style={styles.headerTitle}>{lessonData.title}</Text>
-          <Text style={styles.headerSubtitle} numberOfLines={1}>
+            <Text style={styles.headerSubtitle} numberOfLines={3}>
             {lessonData.description}
           </Text>
+          </View>
         </View>
 
         <View style={styles.progressContainer}>
@@ -387,6 +469,31 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
     paddingHorizontal: 16,
     gap: 12,
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  headerTopRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+    zIndex: 10,
+  },
+  headerBackgroundImage: {
+    position: 'absolute',
+    width: '110%',
+    height: '120%',
+    left: -5,
+    top: -14,
+    opacity: 0.50,
+  },
+  gradientOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    opacity: 0.3,
+    backgroundColor: 'rgba(139, 92, 246, 0.2)',
   },
   headerButton: {
     width: 40,
@@ -395,25 +502,32 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
     alignItems: 'center',
     justifyContent: 'center',
+    zIndex: 10,
   },
   headerContent: {
     gap: 4,
+    flex: 1,
+    flexShrink: 1,
   },
   headerTitle: {
     fontSize: 20,
     fontFamily: 'Lexend',
     fontWeight: '700',
     color: '#FFFFFF',
+    flexShrink: 1,
   },
   headerSubtitle: {
     fontSize: 14,
     fontFamily: 'Lexend',
     color: 'rgba(255, 255, 255, 0.9)',
+    lineHeight: 18,
+    flexShrink: 1,
   },
   progressContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
+    zIndex: 10,
   },
   progressBar: {
     flex: 1,
@@ -465,6 +579,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Lexend',
     color: '#374151',
     lineHeight: 20,
+    flexWrap: 'wrap',
   },
   backButton: {
     paddingHorizontal: 24,

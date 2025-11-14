@@ -28,6 +28,13 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen 
+        name="modomusica" 
+        options={{ 
+          title: 'Modo Música',
+          tabBarLabel: 'Modo Música',
+        }}
+      />
+      <Tabs.Screen 
         name="loja" 
         options={{ 
           title: 'Loja',
@@ -39,6 +46,14 @@ export default function TabLayout() {
         options={{ 
           title: 'Perfil',
           tabBarLabel: 'Perfil',
+        }}
+      />
+      <Tabs.Screen 
+        name="chat" 
+        options={{ 
+          title: 'Chat',
+          tabBarLabel: 'Chat',
+          href: null, // Esconder da tab bar (será acessível via outro meio)
         }}
       />
       <Tabs.Screen 

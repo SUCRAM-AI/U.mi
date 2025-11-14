@@ -7,6 +7,7 @@
   "description": "Pratique tocar o refrão de uma música completa. O refrão geralmente é a parte mais importante e memorável.",
   "type": "pratica-sequencia",
   "asset": "assets/images/ensaio_refrao.png",
+  "headerImage": "assets/images/lyricslicao.png",
   "successCriteria": "Tocar o refrão completo com precisão",
   "sequence": ["C", "G", "Am", "F", "C", "G", "C"],
   "expectedChords": ["C", "G", "Am", "F", "C", "G", "C"],

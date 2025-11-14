@@ -7,6 +7,7 @@
   "description": "Pratique a transição entre Em e Am. Muitas músicas usam esses dois acordes como base.",
   "type": "pratica-sequencia",
   "asset": "assets/images/transicao_em_am.png",
+  "headerImage": "assets/images/lyricslicao.png",
   "successCriteria": "Tocar a transição Em-Am-Em-Am suavemente",
   "sequence": ["Em", "Am", "Em", "Am"],
   "expectedChords": ["Em", "Am", "Em", "Am"],

@@ -7,6 +7,7 @@
   "description": "Aprenda sobre a estrutura básica de uma música: verso, refrão, ponte. Entenda como as progressões se organizam em uma canção.",
   "type": "teoria",
   "asset": "assets/images/estrutura_musica.png",
+  "headerImage": "assets/images/lyricslicao.png",
   "successCriteria": "Compreender a estrutura básica de uma música",
   "content": [
     "Verso: geralmente usa progressões mais simples, apresenta a história",

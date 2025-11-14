@@ -69,18 +69,18 @@ export default function BottomNav({
 
         <TouchableOpacity 
           style={styles.link3}
-          onPress={() => router.push('/(tabs)/loja')}
+          onPress={() => router.push('/(tabs)/chat' as any)}
         >
           {Iconeloja ? (
             <Iconeloja 
               width={24} 
               height={28} 
-              style={getNavIconStyle('/loja')} 
+              style={getNavIconStyle('/chat')} 
             />
           ) : (
-            <Text>🛒</Text>
+            <Text>💬</Text>
           )}
-          <Text style={getNavTextStyle('/loja')}>Loja</Text>
+          <Text style={getNavTextStyle('/chat')}>Chat</Text>
         </TouchableOpacity>
 
         <TouchableOpacity 

@@ -7,6 +7,7 @@
   "description": "Pratique tocar o acorde Am (Lá menor). Similar ao Em, mas com uma posição diferente.",
   "type": "pratica-microfone",
   "asset": "assets/images/acorde_am.png",
+  "headerImage": "assets/images/lyricslicao.png",
   "successCriteria": "Tocar o acorde Am corretamente",
   "expectedChord": "Am",
   "xpReward": 60,

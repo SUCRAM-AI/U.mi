@@ -6,7 +6,8 @@
   "title": "Menor vs Maior",
   "description": "Aprenda a diferença entre acordes maiores e menores. Ouça exemplos e identifique a diferença sonora.",
   "type": "quiz-audio",
-  "asset": "assets/images/maior_menor.png",
+  "asset": "assets/images/maior_menor.svg",
+  "headerImage": "assets/images/lyricslicao.png",
   "successCriteria": "Identificar corretamente acordes maiores e menores",
   "quiz": {
     "questions": [

@@ -8,7 +8,10 @@ import {
   Text,
   StyleSheet,
   ScrollView,
+  TouchableOpacity,
+  Alert,
 } from 'react-native';
+import { useRouter } from 'expo-router';
 import { useAuth } from '@contexts/AuthContext';
 import MenuIcon from '@assets/images/config.svg';
 import IconeConfig from '@assets/images/people.svg';
@@ -20,10 +23,13 @@ import BottomNav from '@components/ui/bottom-nav';
 import { CifraSearch } from '@components/cifra-search';
 import { CifraViewer } from '@components/cifra-viewer';
 import { CifraClubResponse } from '@services/api';
+import SettingsModal from '@components/settings-modal';
 
 export default function Musica() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const router = useRouter();
   const [cifra, setCifra] = useState<CifraClubResponse | null>(null);
+  const [settingsVisible, setSettingsVisible] = useState(false);
 
   const handleCifraFound = (foundCifra: CifraClubResponse) => {
     setCifra(foundCifra);
@@ -31,6 +37,25 @@ export default function Musica() {
 
   const handleCloseCifra = () => {
     setCifra(null);
+  };
+
+  const handleSettingsPress = () => {
+    setSettingsVisible(true);
+  };
+
+  const handleCloseSettings = () => {
+    setSettingsVisible(false);
+  };
+
+  const handleAbout = () => {
+    setSettingsVisible(false);
+    Alert.alert('Sobre', 'U.Mi - Aplicativo de aprendizado musical');
+  };
+
+  const handleLogout = async () => {
+    setSettingsVisible(false);
+    await logout();
+    router.replace('/login');
   };
 
   // Se há uma cifra carregada, mostrar o visualizador
@@ -48,11 +73,11 @@ export default function Musica() {
           </View>
         </View>
         <Text style={styles.title}>Música</Text>
-        <View style={styles.button3}>
+        <TouchableOpacity style={styles.button3} onPress={handleSettingsPress}>
           <View style={styles.headerIconContainer}>
             <IconeConfig width={32} height={32} style={styles.headerIcon} />
           </View>
-        </View>
+        </TouchableOpacity>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -66,6 +91,14 @@ export default function Musica() {
         Iconeloja={Iconeloja}
         Perfilp={Perfilp}
       />
+
+      {/* Settings Modal */}
+      <SettingsModal
+        visible={settingsVisible}
+        onClose={handleCloseSettings}
+        onPressAbout={handleAbout}
+        onPressLogout={handleLogout}
+      />
     </View>
   );
 }
@@ -76,6 +109,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fbfaff',
   },
   scrollContent: {
+    paddingTop: 80,
     paddingBottom: 100,
     flexGrow: 1,
   },

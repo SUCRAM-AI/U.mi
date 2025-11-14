@@ -7,6 +7,7 @@
   "description": "Explore o mapa completo da escala maior no braço do violão. Entenda como as notas se organizam em todo o braço.",
   "type": "teoria",
   "asset": "assets/images/mapa_escala.png",
+  "headerImage": "assets/images/lyricslicao.png",
   "successCriteria": "Compreender o padrão da escala maior no braço",
   "content": [
     "A escala maior segue um padrão de tons e semitons",

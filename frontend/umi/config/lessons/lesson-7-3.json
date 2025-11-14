@@ -7,6 +7,7 @@
   "description": "Pratique a progressão D-A-E. Esta é uma progressão muito comum em música popular.",
   "type": "pratica-sequencia",
   "asset": "assets/images/progressao_d_a_e.png",
+  "headerImage": "assets/images/lyricslicao.png",
   "successCriteria": "Tocar a progressão D-A-E suavemente",
   "sequence": ["D", "A", "E", "A", "D"],
   "expectedChords": ["D", "A", "E", "A", "D"],

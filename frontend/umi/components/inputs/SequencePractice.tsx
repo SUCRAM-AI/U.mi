@@ -2,7 +2,7 @@
  * Componente para prática de sequência de acordes/notas
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { MicrophoneInput } from './MicrophoneInput';
-import { detectChord } from '@services/api';
+import { detectChord, normalizeChord } from '@services/api';
 
 interface SequencePracticeProps {
   sequence: string[];
@@ -21,6 +21,7 @@ interface SequencePracticeProps {
   title?: string;
   instruction?: string;
   currentIndex?: number;
+  onCurrentChordChange?: (chord: string, index: number) => void;
 }
 
 export function SequencePractice({
@@ -28,24 +29,36 @@ export function SequencePractice({
   onComplete,
   title,
   instruction,
+  onCurrentChordChange,
 }: SequencePracticeProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [results, setResults] = useState<{ expected: string; detected: string; correct: boolean }[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [completed, setCompleted] = useState(false);
 
+  // Notificar mudança de acorde atual
+  useEffect(() => {
+    if (sequence[currentIndex] && onCurrentChordChange) {
+      onCurrentChordChange(sequence[currentIndex], currentIndex);
+    }
+  }, [currentIndex, sequence, onCurrentChordChange]);
+
   const handleDetect = async (result: { chord: string; success: boolean }) => {
     if (isProcessing || completed) return;
 
     setIsProcessing(true);
     const expected = sequence[currentIndex];
+    const normalizedDetected = normalizeChord(result.chord);
+    const normalizedExpected = normalizeChord(expected);
+    
     const isCorrect = result.success && 
-      (result.chord.toLowerCase().includes(expected.toLowerCase()) ||
-       expected.toLowerCase().includes(result.chord.toLowerCase()));
+      (normalizedDetected === normalizedExpected ||
+       normalizedDetected.includes(normalizedExpected) ||
+       normalizedExpected.includes(normalizedDetected));
 
     const newResult = {
       expected,
-      detected: result.chord,
+      detected: normalizedDetected,
       correct: isCorrect,
     };
 

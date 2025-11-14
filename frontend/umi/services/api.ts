@@ -3,29 +3,10 @@
  */
 
 import * as FileSystem from 'expo-file-system';
-import { Platform } from 'react-native';
 
-// Detectar plataforma e usar URL apropriada
-// Web: usa localhost (navegador não consegue acessar IP da rede facilmente)
-// Native (Expo Go): usa IP da rede para dispositivos físicos/emuladores
-const getApiBaseUrl = () => {
-  if (!__DEV__) {
-    return 'https://your-api-url.com/api'; // Produção
-  }
-  
-  // Web: usar localhost
-  if (Platform.OS === 'web') {
-    return 'http://localhost:5000/api';
-  }
-  
-  // Native (iOS/Android): usar IP da rede
-  // Para emulador Android, pode precisar usar 10.0.2.2
-  // Para iOS Simulator, pode usar localhost
-  // Para dispositivo físico, usar IP da máquina
-  return 'http://192.168.0.7:5000/api';
-};
-
-const API_BASE_URL = getApiBaseUrl();
+const API_BASE_URL = __DEV__ 
+  ? 'http://10.0.2.101:5000/api'  // Desenvolvimento - IP correto
+  : 'https://your-api-url.com/api';  // Produção (ajustar quando necessário)
 
 export interface DetectChordResponse {
   success: boolean;
@@ -54,6 +35,56 @@ export interface ExtractChordsResponse {
   count: number;
   message: string;
   error?: string;
+}
+
+/**
+ * Normaliza o nome do acorde para um formato padrão
+ * Converte variações como "E:min", "E minor", "Emin" para "Em"
+ */
+export function normalizeChord(chord: string): string {
+  if (!chord) return '';
+  
+  let normalized = chord.trim();
+  
+  // Remover espaços e converter para minúsculas para comparação
+  normalized = normalized.toLowerCase();
+  
+  // Padrões de substituição:
+  // "E:min" → "Em"
+  // "A:min" → "Am"
+  // "E:major" ou "E:maj" → "E"
+  // "E minor" → "Em"
+  // "E major" → "E"
+  // "Emin" → "Em"
+  // "Emaj" → "E"
+  
+  // Substituir ":min" por "m"
+  normalized = normalized.replace(/:min/g, 'm');
+  
+  // Substituir ":major" ou ":maj" por nada (acorde maior é só a nota)
+  normalized = normalized.replace(/:major|:maj/g, '');
+  
+  // Substituir " minor" por "m"
+  normalized = normalized.replace(/\s+minor/g, 'm');
+  
+  // Substituir " major" por nada
+  normalized = normalized.replace(/\s+major/g, '');
+  
+  // Substituir "min" (sem dois pontos) por "m" se não for parte de outra palavra
+  normalized = normalized.replace(/\bmin\b/g, 'm');
+  
+  // Substituir "maj" (sem dois pontos) por nada se não for parte de outra palavra
+  normalized = normalized.replace(/\bmaj\b/g, '');
+  
+  // Remover espaços extras
+  normalized = normalized.replace(/\s+/g, '');
+  
+  // Capitalizar primeira letra para manter consistência
+  if (normalized.length > 0) {
+    normalized = normalized[0].toUpperCase() + normalized.slice(1);
+  }
+  
+  return normalized;
 }
 
 /**
@@ -162,6 +193,17 @@ export async function detectChord(audioUri: string): Promise<DetectChordResponse
     }
 
     const data: DetectChordResponse = await response.json();
+    
+    // Normalizar o acorde detectado
+    if (data.chord) {
+      data.chord = normalizeChord(data.chord);
+    }
+    
+    // Normalizar todos os acordes na lista
+    if (data.all_chords && Array.isArray(data.all_chords)) {
+      data.all_chords = data.all_chords.map(chord => normalizeChord(chord));
+    }
+    
     return data;
   } catch (error) {
     console.error('Erro ao detectar acorde:', error);
@@ -277,127 +319,45 @@ export async function healthCheck(): Promise<boolean> {
   }
 }
 
-// ===== CIFRA CLUB API =====
-
+/**
+ * Interface para resposta da API do Cifra Club
+ */
 export interface CifraClubResponse {
+  name: string;
   artist: string;
   cifra: string[];
-  cifraclub_url: string;
-  name: string;
-  youtube_url: string;
+  youtube_url?: string;
+  cifraclub_url?: string;
   error?: string;
+  message?: string;
 }
 
 /**
- * Busca uma cifra específica por artista e música
+ * Busca uma cifra do Cifra Club
  */
-export async function getCifra(
-  artist: string,
-  song: string
-): Promise<CifraClubResponse | null> {
-  console.log('🚀 getCifra chamado com:', { artist, song });
-  console.log('🌐 API_BASE_URL:', API_BASE_URL);
+export async function getCifra(artist: string, song: string): Promise<CifraClubResponse> {
+  const artistNormalized = encodeURIComponent(artist.toLowerCase().trim());
+  const songNormalized = encodeURIComponent(song.toLowerCase().trim());
+  const url = `${API_BASE_URL}/cifra/${artistNormalized}/${songNormalized}`;
   
-  try {
-    // Normalizar: remover espaços e caracteres especiais
-    const normalizedArtist = encodeURIComponent(artist.trim().toLowerCase().replace(/\s+/g, '-'));
-    const normalizedSong = encodeURIComponent(song.trim().toLowerCase().replace(/\s+/g, '-'));
-    
-    console.log('📝 Normalizado:', { normalizedArtist, normalizedSong });
-    
-    const url = `${API_BASE_URL}/cifra/${normalizedArtist}/${normalizedSong}`;
-    console.log('🔍 URL completa:', url);
-    console.log('📤 Fazendo requisição fetch...');
-    
-    // Criar AbortController para timeout
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 150000); // 150 segundos (2.5 minutos)
-    
-    try {
-      const response = await fetch(url, {
-        signal: controller.signal,
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-        },
-      });
-      
-      clearTimeout(timeoutId);
-      
-      console.log('📥 Resposta recebida:', {
-        status: response.status,
-        ok: response.ok,
-        statusText: response.statusText,
-      });
-      
-      if (!response.ok) {
-        console.log('❌ Resposta não OK, tentando ler erro...');
-        const errorData = await response.json();
-        console.log('❌ Dados do erro:', errorData);
-        throw new Error(errorData.message || `Erro ${response.status}`);
-      }
-      
-      console.log('✅ Resposta OK, parseando JSON...');
-      const data: CifraClubResponse = await response.json();
-      console.log('✅ JSON parseado:', {
-        artist: data.artist,
-        name: data.name,
-        hasCifra: !!data.cifra,
-        cifraLength: data.cifra?.length || 0,
-        hasError: !!data.error,
-      });
-      
-      // Verificar se há erro na resposta
-      if (data.error) {
-        console.log('⚠️ Resposta contém erro:', data.error);
-        throw new Error(data.error);
-      }
-      
-      console.log('✅ Retornando dados da cifra');
-      return data;
-    } catch (fetchError: any) {
-      clearTimeout(timeoutId);
-      
-      if (fetchError.name === 'AbortError') {
-        console.error('⏱️ Timeout: A requisição demorou mais de 2.5 minutos');
-        throw new Error('A requisição demorou muito. Tente novamente.');
-      }
-      
-      console.error('❌ Erro ao buscar cifra:', fetchError);
-      if (fetchError instanceof Error) {
-        console.error('❌ Mensagem de erro:', fetchError.message);
-        console.error('❌ Stack:', fetchError.stack);
-      }
-      
-      // Se for erro de rede, relançar para o componente tratar
-      if (fetchError.message?.includes('Failed to fetch') || 
-          fetchError.message?.includes('NetworkError') ||
-          fetchError.message?.includes('Network request failed')) {
-        throw new Error('Erro de conexão. Verifique se o backend está rodando.');
-      }
-      
-      throw fetchError;
-    }
-  } catch (error) {
-    console.error('❌ Erro geral ao buscar cifra:', error);
-    if (error instanceof Error) {
-      console.error('❌ Mensagem de erro:', error.message);
-    }
-    return null;
-  }
-}
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
 
-/**
- * Verifica se a cifraclub-api está disponível
- */
-export async function checkCifraHealth(): Promise<boolean> {
-  try {
-    const response = await fetch(`${API_BASE_URL}/cifra/health`);
-    const data = await response.json();
-    return data.cifraclub_api_available === true;
-  } catch (error) {
-    console.error('Erro ao verificar saúde da cifraclub-api:', error);
-    return false;
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    return {
+      name: song,
+      artist: artist,
+      cifra: [],
+      error: errorData.error || `Erro ${response.status}`,
+    };
   }
+
+  const data = await response.json();
+  return data;
 }
 

@@ -28,38 +28,23 @@ export function CifraSearch({ onCifraFound }: CifraSearchProps) {
   console.log('�� Props:', { onCifraFound: !!onCifraFound });
 
   const handleSearch = async () => {
-    console.log('🔘 Botão de busca clicado');
-    console.log('📝 Artista:', artist);
-    console.log('📝 Música:', song);
-    
     if (!artist.trim() || !song.trim()) {
-      console.log('⚠️ Campos vazios');
       Alert.alert('Atenção', 'Preencha o artista e o nome da música');
       return;
     }
 
-    console.log('✅ Campos preenchidos, iniciando busca...');
     setLoading(true);
     try {
-      console.log('📞 Chamando getCifra...');
       const result = await getCifra(artist.trim(), song.trim());
-      console.log('📥 Resultado recebido:', result ? 'sucesso' : 'null', result?.error || 'sem erro');
       
-      if (result && !result.error) {
-        console.log('✅ Cifra encontrada, chamando onCifraFound');
+      if (result && !result.error && result.cifra && result.cifra.length > 0) {
         onCifraFound(result);
       } else {
-        console.log('❌ Cifra não encontrada ou com erro');
-        Alert.alert(
-          'Não encontrado',
-          'Não foi possível encontrar esta cifra. Verifique o nome do artista e da música.'
-        );
+        Alert.alert('Erro', result?.error || 'Não foi possível encontrar esta cifra');
       }
     } catch (error) {
-      console.error('❌ Erro capturado no handleSearch:', error);
       Alert.alert('Erro', 'Ocorreu um erro ao buscar a cifra');
     } finally {
-      console.log('🏁 Finalizando busca');
       setLoading(false);
     }
   };
@@ -82,6 +67,13 @@ export function CifraSearch({ onCifraFound }: CifraSearchProps) {
             onChangeText={setArtist}
             autoCapitalize="words"
             editable={!loading}
+            returnKeyType="next"
+            onSubmitEditing={() => {
+              // Focar no próximo campo ou buscar se ambos estiverem preenchidos
+              if (song.trim()) {
+                handleSearch();
+              }
+            }}
           />
         </View>
 
@@ -100,18 +92,17 @@ export function CifraSearch({ onCifraFound }: CifraSearchProps) {
 
         <TouchableOpacity
           style={[styles.searchButton, loading && styles.searchButtonDisabled]}
-          onPress={() => {
-            console.log('🔘 TOUCH DETECTADO - onPress chamado');
-            handleSearch();
-          }}
+          onPress={handleSearch}
           disabled={loading}
+          activeOpacity={0.7}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
           {loading ? (
             <ActivityIndicator color="#FFFFFF" />
           ) : (
             <>
               <Ionicons name="search" size={20} color="#FFFFFF" />
-              <Text style={styles.searchButtonText}>Buscar</Text>
+              <Text style={styles.searchButtonText} pointerEvents="none">Buscar</Text>
             </>
           )}
         </TouchableOpacity>

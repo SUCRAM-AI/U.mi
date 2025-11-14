@@ -7,6 +7,7 @@
   "description": "Pratique tocar o acorde C (Dó maior). Complete o conjunto dos acordes básicos mais comuns.",
   "type": "pratica-microfone",
   "asset": "assets/images/acorde_c.png",
+  "headerImage": "assets/images/lyricslicao.png",
   "successCriteria": "Tocar o acorde C corretamente",
   "expectedChord": "C",
   "xpReward": 60,

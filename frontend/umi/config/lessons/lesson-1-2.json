@@ -7,6 +7,7 @@
   "description": "Aprenda a numeração correta dos dedos da mão esquerda (para destros): 1=indicador, 2=médio, 3=anelar, 4=mínimo.",
   "type": "quiz-arrastar",
   "asset": "assets/images/dedos_numero.png",
+  "headerImage": "assets/images/lyricslicao.png",
   "successCriteria": "Todas as correspondências devem estar corretas",
   "items": [
     { "id": "dedo1", "label": "1 - Indicador", "correctTarget": "dedo1_zone" },

@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import { Audio } from 'expo-av';
 import { AudioRecorderButton } from './audio-recorder-button';
-import { detectChord } from '../services/api';
+import { detectChord, normalizeChord } from '../services/api';
 import Play from '../assets/images/play.svg';
 
 interface ChordDetectionExerciseProps {
@@ -41,26 +41,28 @@ export function ChordDetectionExercise({
       const result = await detectChord(uri);
 
       if (result.success && result.chord) {
-        setDetectedChord(result.chord);
+        const normalizedDetected = normalizeChord(result.chord);
+        setDetectedChord(normalizedDetected);
 
         // Verificar se está correto (se esperado foi fornecido)
         if (expectedChord) {
-          const isCorrect = result.chord.toLowerCase() === expectedChord.toLowerCase();
+          const normalizedExpected = normalizeChord(expectedChord);
+          const isCorrect = normalizedDetected === normalizedExpected;
           
           if (isCorrect) {
-            Alert.alert('✅ Correto!', `Você tocou ${result.chord} corretamente!`, [
+            Alert.alert('✅ Correto!', `Você tocou ${normalizedDetected} corretamente!`, [
               { text: 'OK', onPress: onCorrect },
             ]);
           } else {
             Alert.alert(
               '❌ Incorreto',
-              `Você tocou ${result.chord}, mas o esperado era ${expectedChord}`,
+              `Você tocou ${normalizedDetected}, mas o esperado era ${normalizedExpected}`,
               [{ text: 'Tentar novamente', onPress: onIncorrect }]
             );
           }
         } else {
           // Apenas mostrar o acorde detectado
-          Alert.alert('Acorde Detectado', `O acorde detectado é: ${result.chord}`);
+          Alert.alert('Acorde Detectado', `O acorde detectado é: ${normalizedDetected}`);
         }
       } else {
         Alert.alert('Erro', result.message || 'Não foi possível detectar o acorde');
@@ -142,13 +144,13 @@ export function ChordDetectionExercise({
         <View
           style={[
             styles.feedbackContainer,
-            detectedChord.toLowerCase() === expectedChord.toLowerCase()
+            normalizeChord(detectedChord) === normalizeChord(expectedChord)
               ? styles.feedbackCorrect
               : styles.feedbackIncorrect,
           ]}
         >
           <Text style={styles.feedbackText}>
-            {detectedChord.toLowerCase() === expectedChord.toLowerCase()
+            {normalizeChord(detectedChord) === normalizeChord(expectedChord)
               ? '✅ Correto!'
               : '❌ Tente novamente'}
           </Text>

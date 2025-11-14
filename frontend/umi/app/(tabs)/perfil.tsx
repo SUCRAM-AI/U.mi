@@ -1,10 +1,12 @@
-import React from 'react';
-import { StyleSheet, View, Text, Image, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, View, Text, Image, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { useRouter } from 'expo-router';
 import { useAuth } from '@contexts/AuthContext';
+import SettingsModal from '@components/settings-modal';
 
 
-import MenuIcon from '@assets/images/config.svg'; // Menu Header (Configurações)
-import IconeConfig from '@assets/images/people.svg'; // Config Header (Amigos/Voltar)
+import MenuIcon from '@assets/images/people.svg'; // Menu Header (Configurações)
+import IconeConfig from '@assets/images/config.svg'; // Config Header (Amigos/Voltar)
 import IconeCadeadoCinza from '@assets/images/cadeadocinza.svg'; // Cadeado para conquistas bloqueadas
 import IconeNotas from '@assets/images/icongray.svg'; // para 'Música' na navegação
 import Iconeloja from '@assets/images/loja.svg'; // para 'Loja' na navegação
@@ -15,10 +17,31 @@ const perfilImg = require('@assets/images/perfil.png');
 const conquistaImg = require('@assets/images/conquista.png');
 
 const Perfil = () => {
+    const router = useRouter();
     const { user, logout } = useAuth();
     const LockedIcon = IconeCadeadoCinza;
+    const [settingsVisible, setSettingsVisible] = useState(false);
     
     const progressPercentage = user ? (user.xp / user.xpToNextLevel) * 100 : 0;
+
+    const handleSettingsPress = () => {
+      setSettingsVisible(true);
+    };
+
+    const handleCloseSettings = () => {
+      setSettingsVisible(false);
+    };
+
+    const handleAbout = () => {
+      setSettingsVisible(false);
+      Alert.alert('Sobre', 'U.Mi - Aplicativo de aprendizado musical');
+    };
+
+    const handleLogout = async () => {
+      setSettingsVisible(false);
+      await logout();
+      router.replace('/login');
+    };
 
   return (
     <View style={styles.perfil}>
@@ -27,12 +50,12 @@ const Perfil = () => {
         <View style={styles.header}>
           <TouchableOpacity style={styles.button2}>
             {/* BackIcon (IconeConfig) */}
-            <MenuIcon width={45} height={45} style={styles.iconStyle} />
+            <IconeConfig width={45} height={45} style={styles.iconStyle} />
           </TouchableOpacity>
           <Text style={styles.heading2Profile}>Perfil</Text>
-          <TouchableOpacity style={styles.button3}>
+          <TouchableOpacity style={styles.button3} onPress={handleSettingsPress}>
             {/* Ícone de Configurações */}
-            <IconeConfig width={32} height={32} style={styles.iconStyle} />
+            <MenuIcon width={32} height={32} style={styles.iconStyle} />
           </TouchableOpacity>
         </View>
 
@@ -146,10 +169,18 @@ const Perfil = () => {
 
                 {/* Bottom navigation*/}
                 <BottomNav
-                    TrilhaIcon={TrilhaIcon}
-                    IconeNotas={IconeNotas}
-                    Iconeloja={Iconeloja}
-                    Perfilp={Perfilp}
+                  TrilhaIcon={TrilhaIcon}
+                  IconeNotas={IconeNotas}
+                  Iconeloja={Iconeloja}
+                  Perfilp={Perfilp}
+                />
+
+                {/* Settings Modal */}
+                <SettingsModal
+                  visible={settingsVisible}
+                  onClose={handleCloseSettings}
+                  onPressAbout={handleAbout}
+                  onPressLogout={handleLogout}
                 />
       </View>
     </View>
@@ -209,11 +240,11 @@ const styles = StyleSheet.create({
   main: {
     flex: 1,
     marginTop: 72, 
-    marginBottom: 85, 
+    marginBottom: 85, // Espaço para o bottom nav
     paddingHorizontal: 16,
   },
   mainContentContainer: {
-    paddingBottom: 20, 
+    paddingBottom: 40, // Espaço extra no final do scroll
   },
 
   // User Info
@@ -530,82 +561,6 @@ const styles = StyleSheet.create({
     fontFamily: 'SplineSans-Bold',
     fontSize: 16,
     fontWeight: '700',
-  },
-
-  // botão de navegação
-  nav: {
-    height: 85,
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-    borderTopWidth: 1,
-    borderTopColor: '#eae0f5',
-    alignItems: 'center',
-    paddingTop: 10,
-  },
-  container3: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%',
-    paddingHorizontal: 10,
-    opacity: 0.7,
-  },
-  link: {
-    alignItems: 'center',
-    width: 80,
-  },
-  link2: {
-    alignItems: 'center',
-    width: 50,
-  },
-  link3: {
-    alignItems: 'center',
-    width: 65,
-  },
-  link4: {
-    alignItems: 'center',
-    width: 55,
-  },
-
-  navIconStyle: {
-    // Estilo para SVGs da Navegação
-    textAlign: 'center',
-    marginBottom: 4,
-    color: 'rgba(51, 51, 51, 0.7)', // Cor padrão
-  },
-  trilhaTeorica: {
-    color: 'rgba(51, 51, 51, 0.7)',
-    fontFamily: 'SplineSans-Medium',
-    fontSize: 12,
-    fontWeight: '500',
-    lineHeight: 16,
-    textAlign: 'center',
-  },
-  musica: {
-    color: 'rgba(51, 51, 51, 0.7)',
-    fontFamily: 'SplineSans-Medium',
-    fontSize: 12,
-    fontWeight: '500',
-    lineHeight: 16,
-    textAlign: 'center',
-  },
-  loja: {
-    color: 'rgba(51, 51, 51, 0.7)',
-    fontFamily: 'SplineSans-Medium',
-    fontSize: 12,
-    fontWeight: '500',
-    lineHeight: 16,
-    textAlign: 'center',
-  },
-  perfil2: {
-    color: 'rgba(51, 51, 51, 0.7)',
-    fontFamily: 'SplineSans-Medium',
-    fontSize: 12,
-    fontWeight: '500',
-    lineHeight: 16,
-    textAlign: 'center',
   },
 });
 

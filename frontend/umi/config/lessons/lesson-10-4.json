@@ -7,6 +7,7 @@
   "description": "Pratique tocar uma música completa com backing track. Esta é a preparação final para tocar músicas reais.",
   "type": "pratica-ritmo",
   "asset": "assets/images/show_final.png",
+  "headerImage": "assets/images/lyricslicao.png",
   "successCriteria": "Tocar música completa com backing track",
   "sequence": ["C", "G", "Am", "F", "C", "G", "Am", "F", "C", "G", "C"],
   "pattern": ["↓", "↑", "↓", "↑"],

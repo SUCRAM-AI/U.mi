@@ -7,6 +7,7 @@
   "description": "Aprenda sobre a corda X (corda mudo). É usada para criar ritmo percussivo em muitos estilos populares.",
   "type": "teoria",
   "asset": "assets/images/corda_x.png",
+  "headerImage": "assets/images/lyricslicao.png",
   "successCriteria": "Compreender o uso da corda X",
   "content": [
     "A corda X na tablatura significa tocar a corda abafada",

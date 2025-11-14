@@ -10,15 +10,30 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Alert,
+  Image,
 } from 'react-native';
 import { Audio } from 'expo-av';
 import { Ionicons } from '@expo/vector-icons';
+
+// Importar SVGs
+import MaiorMenorSVG from '@assets/images/maior_menor.svg';
+
+// Mapeamento de imagens PNG (apenas imagens que existem)
+const assetImages: Record<string, any> = {
+  // Adicione PNGs aqui quando forem criados
+};
+
+// Mapeamento de SVGs
+const assetSVGs: Record<string, React.ComponentType<any>> = {
+  'assets/images/maior_menor.svg': MaiorMenorSVG,
+};
 
 interface AudioQuizProps {
   question: string;
   options: string[];
   correctAnswer: string;
   audioUri?: string;
+  image?: string;
   onComplete?: (correct: boolean) => void;
   autoPlay?: boolean;
 }
@@ -28,6 +43,7 @@ export function AudioQuiz({
   options,
   correctAnswer,
   audioUri,
+  image,
   onComplete,
   autoPlay = false,
 }: AudioQuizProps) {
@@ -132,6 +148,25 @@ export function AudioQuiz({
     <View style={styles.container}>
       <Text style={styles.question}>{question}</Text>
 
+      {image && (
+        <View style={styles.imageContainer}>
+          {assetSVGs[image] ? (
+            <View style={styles.svgContainer}>
+              {(() => {
+                const SVGComponent = assetSVGs[image];
+                return <SVGComponent width="100%" height="250" />;
+              })()}
+            </View>
+          ) : assetImages[image] ? (
+            <Image 
+              source={assetImages[image]} 
+              style={styles.image}
+              resizeMode="contain"
+            />
+          ) : null}
+        </View>
+      )}
+
       {audioUri && (
         <TouchableOpacity
           style={styles.audioButton}
@@ -154,7 +189,7 @@ export function AudioQuiz({
       )}
 
       <View style={styles.optionsContainer}>
-        {options.map((option, index) => (
+        {options && options.length > 0 ? options.map((option, index) => (
           <TouchableOpacity
             key={index}
             style={getOptionStyle(option)}
@@ -170,7 +205,9 @@ export function AudioQuiz({
                 <Ionicons name="close-circle" size={24} color="#EF4444" />
               ))}
           </TouchableOpacity>
-        ))}
+        )) : (
+          <Text style={styles.errorText}>Nenhuma opção disponível</Text>
+        )}
       </View>
 
       {completed && (
@@ -194,6 +231,25 @@ const styles = StyleSheet.create({
     color: '#1F113C',
     marginBottom: 16,
     textAlign: 'center',
+  },
+  imageContainer: {
+    width: '100%',
+    marginVertical: 16,
+    borderRadius: 16,
+    overflow: 'hidden',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  image: {
+    width: '100%',
+    height: 250,
+    resizeMode: 'contain',
+  },
+  svgContainer: {
+    width: '100%',
+    minHeight: 250,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   audioButton: {
     flexDirection: 'row',
@@ -258,5 +314,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Lexend',
     fontWeight: '600',
+  },
+  errorText: {
+    fontSize: 14,
+    fontFamily: 'Lexend',
+    color: '#EF4444',
+    textAlign: 'center',
+    padding: 16,
   },
 });

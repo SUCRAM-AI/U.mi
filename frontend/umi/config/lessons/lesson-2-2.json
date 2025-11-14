@@ -7,6 +7,7 @@
   "description": "Exercício de aquecimento conhecido como 'Aranha'. Pratique mover os dedos entre as cordas e trastes de forma coordenada.",
   "type": "pratica-sequencia",
   "asset": "assets/images/aranha_exercicio.png",
+  "headerImage": "assets/images/lyricslicao.png",
   "successCriteria": "Completar a sequência básica de aranha corretamente",
   "sequence": ["C", "D", "E", "F", "G"],
   "expectedChords": ["C", "D", "E", "F", "G"],

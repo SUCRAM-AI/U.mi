@@ -6,7 +6,8 @@
   "title": "Diagrama de Acordes",
   "description": "Aprenda a ler diagramas de acordes. Cada diagrama mostra quais trastes pressionar em quais cordas para formar o acorde.",
   "type": "leitura-diagrama",
-  "asset": "assets/images/diagrama_acorde.png",
+  "asset": "assets/images/diagrama_acorde.svg",
+  "headerImage": "assets/images/lyricslicao.png",
   "successCriteria": "Compreender e identificar partes do diagrama de acordes",
   "diagram": {
     "chordName": "Em",

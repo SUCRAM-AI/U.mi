@@ -7,6 +7,7 @@
   "description": "Aprenda a diferença entre tom e semitom. Um semitom é a menor distância entre duas notas (ex: Dó para Dó#). Um tom é composto por dois semitons.",
   "type": "teoria",
   "asset": "assets/images/tom_semitom.png",
+  "headerImage": "assets/images/lyricslicao.png",
   "successCriteria": "Compreender a diferença entre tom e semitom",
   "content": [
     "Semitom: menor distância entre duas notas (ex: Dó → Dó#, Mi → Fá)",

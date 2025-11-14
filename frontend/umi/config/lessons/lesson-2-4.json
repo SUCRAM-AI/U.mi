@@ -7,6 +7,7 @@
   "description": "Pratique tocar uma melodia simples usando notas em diferentes casas e cordas.",
   "type": "pratica-microfone",
   "asset": "assets/images/melodia_exemplo.png",
+  "headerImage": "assets/images/lyricslicao.png",
   "successCriteria": "Tocar a melodia completa sem erros",
   "sequence": ["C", "D", "E", "F", "G", "A", "B", "C"],
   "expectedChords": ["C", "D", "E", "F", "G", "A", "B", "C"],

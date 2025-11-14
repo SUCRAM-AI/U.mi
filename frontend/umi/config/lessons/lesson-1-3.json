@@ -7,6 +7,7 @@
   "description": "Aprenda a tocar e identificar cada corda solta do violão. As cordas são numeradas da mais fina (1ª) até a mais grossa (6ª).",
   "type": "pratica-microfone",
   "asset": "assets/images/cordas_soltas.png",
+  "headerImage": "assets/images/lyricslicao.png",
   "successCriteria": "Todas as cordas devem ser tocadas corretamente",
   "sequence": ["E", "B", "G", "D", "A", "E"],
   "expectedChords": ["E", "B", "G", "D", "A", "E"],

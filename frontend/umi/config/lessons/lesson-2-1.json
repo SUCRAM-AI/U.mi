@@ -7,6 +7,7 @@
   "description": "Entenda o conceito de casas (trastes) no braço do violão. Cada casa representa um semitom na escala musical.",
   "type": "pratica-microfone",
   "asset": "assets/images/casas_trastes.png",
+  "headerImage": "assets/images/lyricslicao.png",
   "successCriteria": "Demonstrar compreensão das casas tocando notas em diferentes trastes",
   "expectedChord": "C",
   "xpReward": 40,

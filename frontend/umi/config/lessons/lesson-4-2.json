@@ -7,6 +7,7 @@
   "description": "Pratique tocar o acorde E (Mi maior). É um acorde aberto fundamental.",
   "type": "pratica-microfone",
   "asset": "assets/images/acorde_e.png",
+  "headerImage": "assets/images/lyricslicao.png",
   "successCriteria": "Tocar o acorde E corretamente",
   "expectedChord": "E",
   "xpReward": 60,
