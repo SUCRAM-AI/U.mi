@@ -2,11 +2,29 @@
 
 import { Stack } from 'expo-router';
 import React from 'react';
-import { AuthProvider } from '@contexts/AuthContext';
+import { AuthProvider, useAuth } from '@contexts/AuthContext';
+import ChatBot from '@components/ChatBot';
+import { usePathname } from 'expo-router';
 
-export default function RootLayout() {
+function ChatBotWrapper() {
+  const { isAuthenticated } = useAuth();
+  const pathname = usePathname();
+  
+  // Não mostrar chatbot em telas de autenticação
+  const hideChatbot = pathname === '/login' || 
+                      pathname === '/cadastro' || 
+                      pathname === '/senha' || 
+                      pathname === '/nivel' ||
+                      !isAuthenticated;
+  
+  if (hideChatbot) return null;
+  
+  return <ChatBot />;
+}
+
+function AppContent() {
   return (
-    <AuthProvider>
+    <>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} /> 
         <Stack.Screen name="login" options={{ headerShown: false }} />
@@ -15,6 +33,15 @@ export default function RootLayout() {
         <Stack.Screen name="nivel" options={{ headerShown: false }} />
         <Stack.Screen name="lesson/[lessonId]" options={{ headerShown: false }} />
       </Stack>
+      <ChatBotWrapper />
+    </>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <AuthProvider>
+      <AppContent />
     </AuthProvider>
   );
 }
