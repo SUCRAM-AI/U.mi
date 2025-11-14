@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   Alert,
   ActivityIndicator,
+  Image,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { MicrophoneInput } from './MicrophoneInput';
@@ -21,13 +22,25 @@ interface SequencePracticeProps {
   title?: string;
   instruction?: string;
   currentIndex?: number;
+  lessonId?: string;
 }
+
+// Mapeamento de acordes para imagens
+const chordImages: Record<string, any> = {
+  'C': require('@assets/acordes/Dó(C).png'),
+  'D': require('@assets/acordes/Ré(D).png'),
+  'E': require('@assets/acordes/Mi(E).png'),
+  'G': require('@assets/acordes/Sol(G).png'),
+  'A': require('@assets/acordes/Lá(A).png'),
+  'Am': require('@assets/acordes/LáMenor(Am).png'),
+};
 
 export function SequencePractice({
   sequence,
   onComplete,
   title,
   instruction,
+  lessonId,
 }: SequencePracticeProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [results, setResults] = useState<{ expected: string; detected: string; correct: boolean }[]>([]);
@@ -110,6 +123,16 @@ export function SequencePractice({
       <View style={styles.currentChordContainer}>
         <Text style={styles.currentChordLabel}>Tocar agora:</Text>
         <Text style={styles.currentChord}>{sequence[currentIndex]}</Text>
+        {/* Imagem do acorde para lesson 9.2, 10.2 e 10.3 */}
+        {(lessonId === '9.2' || lessonId === '10.2' || lessonId === '10.3') && chordImages[sequence[currentIndex]] && (
+          <View style={styles.chordImageContainer}>
+            <Image 
+              source={chordImages[sequence[currentIndex]]} 
+              style={styles.chordImage}
+              resizeMode="contain"
+            />
+          </View>
+        )}
       </View>
 
       {/* Sequence Preview */}
@@ -225,6 +248,18 @@ const styles = StyleSheet.create({
     fontFamily: 'Lexend',
     fontWeight: '700',
     color: '#7C3AED',
+    marginBottom: 16,
+  },
+  chordImageContainer: {
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 8,
+  },
+  chordImage: {
+    width: '100%',
+    maxWidth: 300,
+    height: 250,
   },
   sequenceContainer: {
     flexDirection: 'row',

@@ -135,19 +135,27 @@ export default function LessonScreen() {
             onComplete={handleComplete}
             title={lessonData.title}
             instruction={lessonData.description}
+            lessonId={lessonData.id}
           />
         );
 
       case 'quiz-audio':
-        return lessonData.quiz ? (
+        if (!lessonData.quiz) return null;
+        
+        // Suporta tanto quiz com uma pergunta quanto quiz com array de perguntas
+        const quizQuestion = lessonData.quiz.questions 
+          ? lessonData.quiz.questions[0] 
+          : lessonData.quiz;
+        
+        return (
           <AudioQuiz
-            question={lessonData.quiz.question}
-            options={lessonData.quiz.options}
-            correctAnswer={lessonData.quiz.correctAnswer}
-            audioUri={lessonData.quiz.audioUri}
+            question={quizQuestion.question}
+            options={quizQuestion.options}
+            correctAnswer={quizQuestion.correctAnswer}
+            audioUri={quizQuestion.audioUri}
             onComplete={handleComplete}
           />
-        ) : null;
+        );
 
       case 'teoria':
         return (
@@ -155,6 +163,8 @@ export default function LessonScreen() {
             title={lessonData.title}
             content={lessonData.content || lessonData.description}
             image={lessonData.asset}
+            lessonId={lessonData.id}
+            section={lessonData.section}
           />
         );
 
@@ -165,6 +175,8 @@ export default function LessonScreen() {
               title={lessonData.title}
               content={lessonData.description}
               image={lessonData.asset}
+              lessonId={lessonData.id}
+              section={lessonData.section}
             />
             <MicrophoneInput
               expectedChord={lessonData.expectedChord}
@@ -182,6 +194,8 @@ export default function LessonScreen() {
               title={lessonData.title}
               content={lessonData.description}
               image={lessonData.asset}
+              lessonId={lessonData.id}
+              section={lessonData.section}
             />
             <SequencePractice
               sequence={lessonData.sequence || []}
@@ -191,6 +205,7 @@ export default function LessonScreen() {
               }}
               title="Sequência de Acordes"
               instruction="Toque cada acorde na ordem exibida"
+              lessonId={lessonData.id}
             />
           </View>
         );
@@ -202,6 +217,8 @@ export default function LessonScreen() {
               title={lessonData.title}
               content={lessonData.description}
               image={lessonData.asset}
+              lessonId={lessonData.id}
+              section={lessonData.section}
             />
             <RhythmPractice
               pattern={lessonData.pattern || []}
@@ -220,6 +237,7 @@ export default function LessonScreen() {
               title={lessonData.title}
               content={lessonData.description}
               image={lessonData.asset}
+              section={lessonData.section}
             />
             <RhythmPractice
               pattern={lessonData.pattern || []}
@@ -238,6 +256,7 @@ export default function LessonScreen() {
               title={lessonData.title}
               content={lessonData.description}
               image={lessonData.asset}
+              section={lessonData.section}
             />
             {lessonData.diagram && (
               <DiagramReader
@@ -257,6 +276,7 @@ export default function LessonScreen() {
               title={lessonData.title}
               content={lessonData.description}
               image={lessonData.asset}
+              section={lessonData.section}
             />
             <TouchPractice
               onTap={(timing) => console.log('Tap timing:', timing)}
@@ -273,6 +293,7 @@ export default function LessonScreen() {
             title={lessonData.title}
             content={lessonData.description}
             image={lessonData.asset}
+            section={lessonData.section}
           />
         );
     }
