@@ -1,0 +1,4 @@
+Flask==2.2.2
+Werkzeug<3.0
+beautifulsoup4==4.11.1
+selenium==4.6.0
