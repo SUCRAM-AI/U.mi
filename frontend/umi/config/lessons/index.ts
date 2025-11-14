@@ -8,8 +8,6 @@ import lesson1_3 from './lesson-1-3.json';
 import lesson1_4 from './lesson-1-4.json';
 import lesson2_1 from './lesson-2-1.json';
 import lesson2_2 from './lesson-2-2.json';
-import lesson2_3 from './lesson-2-3.json';
-import lesson2_4 from './lesson-2-4.json';
 import lesson3_1 from './lesson-3-1.json';
 import lesson3_2 from './lesson-3-2.json';
 import lesson3_3 from './lesson-3-3.json';
@@ -17,7 +15,6 @@ import lesson3_4 from './lesson-3-4.json';
 import lesson4_1 from './lesson-4-1.json';
 import lesson4_2 from './lesson-4-2.json';
 import lesson4_3 from './lesson-4-3.json';
-import lesson4_4 from './lesson-4-4.json';
 import lesson5_1 from './lesson-5-1.json';
 import lesson5_2 from './lesson-5-2.json';
 import lesson5_3 from './lesson-5-3.json';
@@ -46,8 +43,6 @@ export const lessons: Record<string, any> = {
   '1.4': lesson1_4,
   '2.1': lesson2_1,
   '2.2': lesson2_2,
-  '2.3': lesson2_3,
-  '2.4': lesson2_4,
   '3.1': lesson3_1,
   '3.2': lesson3_2,
   '3.3': lesson3_3,
@@ -55,7 +50,6 @@ export const lessons: Record<string, any> = {
   '4.1': lesson4_1,
   '4.2': lesson4_2,
   '4.3': lesson4_3,
-  '4.4': lesson4_4,
   '5.1': lesson5_1,
   '5.2': lesson5_2,
   '5.3': lesson5_3,

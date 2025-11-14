@@ -3,14 +3,24 @@
   "section": "1",
   "unit": "2",
   "lesson": "2.2",
-  "title": "Aranha Parte 1",
-  "description": "Exercício de aquecimento conhecido como 'Aranha'. Pratique mover os dedos entre as cordas e trastes de forma coordenada.",
-  "type": "pratica-sequencia",
-  "asset": "assets/images/aranha_exercicio.png",
-  "successCriteria": "Completar a sequência básica de aranha corretamente",
-  "sequence": ["C", "D", "E", "F", "G"],
-  "expectedChords": ["C", "D", "E", "F", "G"],
-  "xpReward": 60,
+  "title": "Tom e Semitom",
+  "description": "Aprenda a diferença entre tom e semitom. Um semitom é a menor distância entre duas notas (ex: Dó para Dó#). Um tom é composto por dois semitons.",
+  "type": "teoria",
+  "asset": "assets/images/tom_semitom.png",
+  "successCriteria": "Compreender a diferença entre tom e semitom",
+  "content": [
+    "Semitom: menor distância entre duas notas (ex: Dó → Dó#, Mi → Fá)",
+    "Tom: distância de dois semitons (ex: Dó → Ré, Ré → Mi)",
+    "No violão, cada traste representa um semitom",
+    "Entre algumas notas naturais existe um semitom (Mi-Fá, Si-Dó)",
+    "Entre outras existe um tom (Dó-Ré, Ré-Mi, Fá-Sol, Sol-Lá, Lá-Si)"
+  ],
+  "quiz": {
+    "question": "Quantos semitons existem entre Dó e Mi?",
+    "options": ["2 semitons", "3 semitons", "4 semitons", "5 semitons"],
+    "correctAnswer": "4 semitons"
+  },
+  "xpReward": 50,
   "expectedFrequencies": [],
   "tolerance": 20
 }

@@ -4,8 +4,14 @@
 
 import * as FileSystem from 'expo-file-system';
 
-const API_BASE_URL = __DEV__ 
-  ? 'http://192.168.0.7:5000/api'  // Desenvolvimento
+// Detectar se está rodando no navegador (web)
+const isWeb = typeof window !== 'undefined';
+
+// URL do backend - ajuste conforme necessário
+// Para web: use localhost ou 127.0.0.1
+// Para dispositivo móvel na mesma rede: use o IP da sua máquina (ex: http://192.168.0.7:5000/api)
+export const API_BASE_URL = __DEV__ 
+  ? (isWeb ? 'http://localhost:5000/api' : 'http://192.168.0.7:5000/api')  // Desenvolvimento
   : 'https://your-api-url.com/api';  // Produção (ajustar quando necessário)
 
 export interface DetectChordResponse {

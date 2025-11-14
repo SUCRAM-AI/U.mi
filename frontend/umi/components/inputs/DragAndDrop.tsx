@@ -2,7 +2,7 @@
  * Componente de Drag and Drop para quizzes interativos
  */
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   Animated,
   Alert,
+  Image,
 } from 'react-native';
 
 interface DragItem {
@@ -29,6 +30,35 @@ interface DragAndDropProps {
   onComplete?: (correct: boolean) => void;
   title?: string;
   instruction?: string;
+  lessonId?: string;
+}
+
+// Mapeamento de IDs para imagens dos componentes do violão
+const violaoComponentImages: Record<string, any> = {
+  corpo: require('@assets/violao_componentes/corpo.png'),
+  braco: require('@assets/violao_componentes/braco.png'),
+  trastes: require('@assets/violao_componentes/trastes.png'),
+  cabeca: require('@assets/violao_componentes/cabeca.png'),
+  pestana: require('@assets/violao_componentes/pestana.png'),
+  cordas: require('@assets/violao_componentes/cordas.png'),
+};
+
+// Mapeamento de IDs para imagens dos dedos
+const dedosImages: Record<string, any> = {
+  dedo1: require('@assets/dedos/dedo_indicador.webp'),
+  dedo2: require('@assets/dedos/dedo_medio.webp'),
+  dedo3: require('@assets/dedos/dedo_anelar.webp'),
+  dedo4: require('@assets/dedos/dedo_mindinho.png'),
+};
+
+// Função para embaralhar array
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
 }
 
 export function DragAndDrop({
@@ -37,10 +67,24 @@ export function DragAndDrop({
   onComplete,
   title,
   instruction,
+  lessonId,
 }: DragAndDropProps) {
   const [selectedItems, setSelectedItems] = useState<Record<string, string>>({});
   const [draggedItem, setDraggedItem] = useState<string | null>(null);
   const [completed, setCompleted] = useState(false);
+
+  // Verificar se algum item tem imagem
+  const hasImages = useMemo(() => {
+    return items.some(item => violaoComponentImages[item.id] || dedosImages[item.id]);
+  }, [items]);
+
+  // Embaralhar itens se houver imagens
+  const shuffledItems = useMemo(() => {
+    if (hasImages) {
+      return shuffleArray(items);
+    }
+    return items;
+  }, [items, hasImages]);
 
   const handleItemPress = (itemId: string) => {
     if (completed) return;
@@ -120,15 +164,17 @@ export function DragAndDrop({
 
       {/* Items para arrastar */}
       <View style={styles.itemsContainer}>
-        {items.map((item) => {
+        {shuffledItems.map((item) => {
           const isSelected = !!selectedItems[item.id];
           const isDragging = draggedItem === item.id;
+          const itemImage = violaoComponentImages[item.id] || dedosImages[item.id];
 
           return (
             <TouchableOpacity
               key={item.id}
               style={[
-                styles.item,
+                !itemImage && styles.item,
+                itemImage && styles.itemWithImage,
                 isSelected && styles.itemSelected,
                 isDragging && styles.itemDragging,
                 completed && isSelected && styles.itemCorrect,
@@ -136,7 +182,15 @@ export function DragAndDrop({
               onPress={() => handleItemPress(item.id)}
               disabled={completed}
             >
-              <Text style={styles.itemText}>{item.label}</Text>
+              {itemImage ? (
+                <Image 
+                  source={itemImage} 
+                  style={styles.itemImage}
+                  resizeMode="cover"
+                />
+              ) : (
+                <Text style={styles.itemText}>{item.label}</Text>
+              )}
             </TouchableOpacity>
           );
         })}
@@ -211,6 +265,21 @@ const styles = StyleSheet.create({
     minWidth: 100,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  itemWithImage: {
+    width: 180,
+    height: 180,
+    paddingHorizontal: 0,
+    paddingVertical: 0,
+    padding: 0,
+    borderRadius: 16,
+    overflow: 'hidden',
+    minWidth: 180,
+  },
+  itemImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 16,
   },
   itemSelected: {
     borderColor: '#7C3AED',
