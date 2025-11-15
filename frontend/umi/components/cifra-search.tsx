@@ -50,7 +50,15 @@ export function CifraSearch({ onCifraFound }: CifraSearchProps) {
       } else {
         console.error('❌ [CifraSearch] Cifra não encontrada ou erro:', result?.error || result?.message);
         const errorMessage = result?.error || result?.message || 'Não foi possível encontrar esta cifra';
-        const detailedMessage = `${errorMessage}\n\nVerifique:\n- Se o backend está rodando\n- Se a cifraclub-api está rodando na porta 3000\n- Se o artista e música estão corretos`;
+        
+        // Mensagem mais específica para timeout
+        let detailedMessage = errorMessage;
+        if (errorMessage.includes('Timeout') || errorMessage.includes('timeout')) {
+          detailedMessage = `${errorMessage}\n\nA API do CifraClub pode estar lenta devido ao processamento. Tente:\n- Aguardar alguns instantes e tentar novamente\n- Verificar se a cifraclub-api está rodando (porta 3000)\n- Tentar com outro artista/música`;
+        } else {
+          detailedMessage = `${errorMessage}\n\nVerifique:\n- Se o backend está rodando\n- Se a cifraclub-api está rodando na porta 3000\n- Se o artista e música estão corretos`;
+        }
+        
         Alert.alert('Erro ao buscar cifra', detailedMessage);
       }
     } catch (error) {

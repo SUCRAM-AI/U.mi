@@ -45,9 +45,8 @@ export default function RegisterScreen() {
         try {
             const success = await register(name, email, password);
             if (success) {
-                Alert.alert('Sucesso', 'Conta criada com sucesso! Agora faça login.', [
-                    { text: 'OK', onPress: () => router.replace('/login') }
-                ]);
+                // Após cadastro bem-sucedido, usuário já está logado, redirecionar para trilha
+                router.replace('/(tabs)/trilha');
             } else {
                 Alert.alert('Erro', 'Este email já está cadastrado');
             }

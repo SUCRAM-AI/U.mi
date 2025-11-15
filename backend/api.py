@@ -11,6 +11,10 @@ from werkzeug.utils import secure_filename
 from modulos import chord_detector, comparador, extract_music_chords
 import traceback
 import requests
+from dotenv import load_dotenv
+
+# Carregar variáveis de ambiente
+load_dotenv()
 
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})  # Permite requisições do frontend de qualquer origem
@@ -35,6 +39,13 @@ ALLOWED_EXTENSIONS = {'mp3', 'wav', 'm4a', 'ogg'}
 
 # Criar pasta de uploads temporários se não existir
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+# Configurações da API OpenAI
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions'
+
+if not OPENAI_API_KEY:
+    print("[AVISO] OPENAI_API_KEY não encontrada no arquivo .env. O endpoint /api/chatbot não funcionará.")
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -308,9 +319,9 @@ def get_cifra(artist, song):
         # Fazer requisição para cifraclub-api
         url = f"{CIFRACLUB_API_URL}/artists/{artist_normalized}/songs/{song_normalized}"
         print(f"🔍 Buscando cifra: {url}")
-        print(f"⏱️ Timeout configurado: 120 segundos")
+        print(f"⏱️ Timeout configurado: 180 segundos (3 minutos)")
         
-        response = requests.get(url, timeout=120)  # Aumentado para 120 segundos (2 minutos)
+        response = requests.get(url, timeout=180)  # Aumentado para 180 segundos (3 minutos) - API do CifraClub pode ser lenta
         print(f"📥 Resposta recebida: status={response.status_code}")
         
         if response.status_code == 200:
@@ -356,7 +367,7 @@ def get_cifra(artist, song):
         print(f"⏱️ Timeout: {e}")
         return jsonify({
             'error': 'Timeout ao buscar cifra',
-            'message': 'A requisição demorou muito para responder (mais de 2 minutos)'
+            'message': 'A requisição demorou muito para responder (mais de 3 minutos). A API do CifraClub pode estar lenta ou sobrecarregada. Tente novamente em alguns instantes.'
         }), 504
     except Exception as e:
         print(f"❌ Erro ao buscar cifra: {str(e)}")
@@ -381,6 +392,128 @@ def cifra_health():
             'cifraclub_api_url': CIFRACLUB_API_URL
         }), 200
 
+@app.route('/api/chatbot', methods=['POST'])
+def chatbot():
+    """
+    Endpoint proxy para o chatbot OpenAI.
+    
+    Recebe:
+        {
+            "messages": [
+                {"role": "user", "content": "mensagem do usuário"},
+                ...
+            ],
+            "lessonContext": "contexto opcional da lição"
+        }
+    
+    Retorna:
+        {
+            "success": bool,
+            "message": str,  # Resposta do chatbot
+            "error": str | null
+        }
+    """
+    try:
+        # Verificar se a chave da API está configurada
+        if not OPENAI_API_KEY:
+            return jsonify({
+                "success": False,
+                "message": "API OpenAI não configurada. Verifique a variável OPENAI_API_KEY no arquivo .env",
+                "error": "OPENAI_API_KEY not configured"
+            }), 500
+        
+        data = request.get_json()
+        
+        if not data or 'messages' not in data:
+            return jsonify({
+                "success": False,
+                "message": "Formato inválido. Envie 'messages' no corpo da requisição.",
+                "error": "Invalid request format"
+            }), 400
+        
+        messages = data.get('messages', [])
+        lesson_context = data.get('lessonContext', '')
+        
+        # Preparar mensagem do sistema com contexto
+        context_text = lesson_context if lesson_context else ''
+        system_content = """Voce e um assistente virtual especializado em ensino de violao e musica. Sua funcao e ajudar estudantes durante o processo de aprendizado, respondendo duvidas sobre:
+- Anatomia do violao e seus componentes
+- Numeracao dos dedos e tecnicas de posicionamento
+- Leitura de tablatura e notacao musical
+- Acordes (maiores, menores, basicos)
+- Escalas musicais
+- Ritmo e simbolos ritmicos
+- Progressoes de acordes
+- Pratica de exercicios
+
+{}
+
+Seja claro, didatico e encorajador. Use linguagem simples e exemplos praticos quando possivel. Se nao souber algo, seja honesto e sugira que o estudante consulte a licao especifica ou pratique mais.""".format(context_text)
+        
+        system_message = {
+            "role": "system",
+            "content": system_content
+        }
+        
+        all_messages = [system_message] + messages
+        
+        # Chamar API da OpenAI
+        response = requests.post(
+            OPENAI_API_URL,
+            headers={
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer {}'.format(OPENAI_API_KEY),
+            },
+            json={
+                'model': 'gpt-4o-mini',
+                'messages': all_messages,
+                'temperature': 0.7,
+                'max_tokens': 500,
+            },
+            timeout=30
+        )
+        
+        if not response.ok:
+            error_data = response.json() if response.content else {}
+            error_msg = error_data.get('error', {}).get('message', 'Erro na API: {}'.format(response.status_code))
+            print("[ERRO] Erro na API OpenAI: {}".format(error_msg))
+            return jsonify({
+                "success": False,
+                "message": "Erro ao processar mensagem: {}".format(error_msg),
+                "error": error_msg
+            }), response.status_code
+        
+        result = response.json()
+        assistant_message = result.get('choices', [{}])[0].get('message', {}).get('content', 'Desculpe, não consegui gerar uma resposta.')
+        
+        return jsonify({
+            "success": True,
+            "message": assistant_message,
+            "error": None
+        }), 200
+        
+    except requests.exceptions.Timeout:
+        return jsonify({
+            "success": False,
+            "message": "Tempo de espera esgotado. Por favor, tente novamente.",
+            "error": "Request timeout"
+        }), 504
+    except requests.exceptions.RequestException as e:
+        print("[ERRO] Erro na requisicao: {}".format(str(e)))
+        return jsonify({
+            "success": False,
+            "message": "Erro de conexao: {}".format(str(e)),
+            "error": str(e)
+        }), 500
+    except Exception as e:
+        print("[ERRO] Erro geral no chatbot: {}".format(str(e)))
+        traceback.print_exc()
+        return jsonify({
+            "success": False,
+            "message": "Erro ao processar requisicao: {}".format(str(e)),
+            "error": str(e)
+        }), 500
+
 if __name__ == '__main__':
     # Configurar porta e host
     port = int(os.environ.get('PORT', 5000))
@@ -394,6 +527,7 @@ if __name__ == '__main__':
     print(f"   - POST /api/compare-chords")
     print(f"   - POST /api/extract-chords")
     print(f"   - POST /api/detect-chord-first")
+    print(f"   - POST /api/chatbot")
     print(f"   - GET  /api/cifra/<artist>/<song>")
     print(f"   - GET  /api/cifra/health")
     

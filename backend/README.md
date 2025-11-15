@@ -1,2 +1,0 @@
-# SUCRAM
-Hackathon Project

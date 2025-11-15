@@ -1,0 +1,299 @@
+import React, {useState, useEffect} from "react";
+import { SafeAreaView, View, ScrollView, Image, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from "react-native";
+import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useAuth } from '@contexts/AuthContext';
+
+import LogoUMISVG from '@assets/images/logo_umi.svg';
+import PasswordIconSVG from '@assets/images/passwordicon.svg';
+
+//importações das imagens locais 
+const lyricsbosque = require('@assets/images/lyrics2.png'); 
+
+
+export default function NovaSenhaScreen() {
+    const params = useLocalSearchParams();
+    const email = (params.email as string) || '';
+    const token = (params.token as string) || '';
+    
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const { resetPassword, verifyPasswordResetToken } = useAuth();
+    const router = useRouter();
+
+    // Verificar token ao carregar a tela
+    useEffect(() => {
+        const verifyTokenOnLoad = async () => {
+            if (!email || !token) {
+                Alert.alert('Erro', 'Dados inválidos', [
+                    { text: 'OK', onPress: () => router.replace('/senha') }
+                ]);
+                return;
+            }
+
+            const isValid = await verifyPasswordResetToken(email, token);
+            if (!isValid) {
+                Alert.alert('Erro', 'Token inválido ou expirado', [
+                    { text: 'OK', onPress: () => router.replace('/senha') }
+                ]);
+            }
+        };
+
+        verifyTokenOnLoad();
+    }, [email, token]);
+
+    const handleResetPassword = async () => {
+        // Verificar token novamente antes de redefinir
+        const isValid = await verifyPasswordResetToken(email, token);
+        if (!isValid) {
+            Alert.alert('Erro', 'Token inválido ou expirado. Por favor, solicite um novo token.');
+            router.replace('/senha');
+            return;
+        }
+        if (!password.trim()) {
+            Alert.alert('Erro', 'Por favor, insira sua nova senha');
+            return;
+        }
+        
+        if (password.length < 6) {
+            Alert.alert('Erro', 'A senha deve ter pelo menos 6 caracteres');
+            return;
+        }
+        
+        if (password !== confirmPassword) {
+            Alert.alert('Erro', 'As senhas não coincidem');
+            return;
+        }
+        
+        setIsLoading(true);
+        try {
+            const success = await resetPassword(email, password);
+            if (success) {
+                Alert.alert('Sucesso', 'Senha redefinida com sucesso!', [
+                    { text: 'OK', onPress: () => router.replace('/login') }
+                ]);
+            } else {
+                Alert.alert('Erro', 'Não foi possível redefinir a senha. Tente novamente.');
+            }
+        } catch (error) {
+            Alert.alert('Erro', 'Ocorreu um erro ao redefinir a senha');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    return (
+        <SafeAreaView style={styles.container}>
+            <ScrollView contentContainerStyle={styles.scrollViewContent}>
+                
+                <Image 
+                    source={lyricsbosque} 
+                    style={styles.headerBackground} 
+                />
+
+                <View style={styles.rectangleWhite} />
+                
+                 {/*Logo e Boas-Vindas*/}
+                <View style={styles.contentArea}> 
+                    
+                    {/* Logo U.Mi  */}
+                    <View style={styles.logoContainer}>
+                        <LogoUMISVG 
+                            width={34} 
+                            height={44} 
+                        />
+                        <Text style={styles.logoText}>U.Mi</Text>
+                    </View>
+
+                    <Text style={styles.welcomeText}>Redefinir Senha</Text>
+                    
+                    {/* Formulário de Senha */}
+                    <Text style={styles.label}>Nova Senha</Text>
+                    <View style={styles.inputContainer}>
+                        <PasswordIconSVG
+                            width={24}
+                            height={24}
+                            style={styles.inputIcon} 
+                        /> 
+                        <TextInput
+                            placeholder="••••••••"
+                            value={password}
+                            onChangeText={setPassword}
+                            style={styles.inputField}
+                            secureTextEntry={true}
+                        />
+                    </View>
+
+                    {/*Formulário de Confirmação de Senha */}
+                    <Text style={styles.label}>Confirmar Nova Senha</Text>
+                    <View style={styles.inputContainer}>
+                         <PasswordIconSVG
+                            width={24}
+                            height={24}
+                            style={styles.inputIcon}
+                        /> 
+                        <TextInput
+                            placeholder="••••••••"
+                            value={confirmPassword}
+                            onChangeText={setConfirmPassword}
+                            style={styles.inputField}
+                            secureTextEntry={true}
+                        />
+                    </View>
+
+                    {/*Botão Redefinir */}
+                    <TouchableOpacity 
+                        style={[styles.registerButton, isLoading && styles.buttonDisabled]} 
+                        onPress={handleResetPassword}
+                        disabled={isLoading}
+                    >
+                        {isLoading ? (
+                            <ActivityIndicator color="#FFFFFF" />
+                        ) : (
+                            <Text style={styles.registerButtonText}>Redefinir Senha</Text>
+                        )}
+                    </TouchableOpacity>
+                    
+                    {/*Link para Login */}
+                    <View style={styles.loginLinkContainer}>
+                        <Text style={styles.loginLinkText}>Lembrou sua senha?</Text>
+                        <TouchableOpacity onPress={() => router.push('/login')}>
+                            <Text style={styles.loginLinkButton}>Fazer Login</Text>
+                        </TouchableOpacity>
+                    </View>
+
+                </View>
+            </ScrollView>
+        </SafeAreaView>
+    );
+}
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#F7F6F8',
+    },
+    scrollViewContent: {
+        paddingBottom: 100,
+        flexGrow: 1,
+    },
+    
+    //ELEMENTOS DE HEADER ABSOLUTO 
+    headerBackground: {
+        width: '100%',
+        height: 364,
+        opacity: 0.30,
+    },
+    rectangleWhite: {
+        width: '100%',
+        height: 617,
+        position: 'absolute',
+        top: 299,
+        backgroundColor: 'white',
+        borderTopLeftRadius: 30,
+        borderTopRightRadius: 30,
+    },
+    
+    contentArea: {
+        paddingHorizontal: 30,
+        width: '100%',
+        marginTop: -184,
+    },
+
+    //LOGO E TÍTULO
+    logoContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 10,
+    },
+    logoText: {
+        color: '#20123C',
+        fontSize: 30,
+        fontWeight: '700', 
+        fontFamily: 'Lexend', 
+        lineHeight: 36,
+        marginLeft: 6,
+    },
+    welcomeText: {
+        color: '#374053',
+        fontSize: 16,
+        fontFamily: 'Lexend',
+        textAlign: 'center',
+        marginBottom: 40,
+    },
+    
+    //CAMPOS DE FORMULÁRIO
+    label: {
+        color: '#374151',
+        fontSize: 14,
+        fontWeight: '500',
+        lineHeight: 20,
+        marginTop: 15,
+        marginBottom: 8,
+    },
+    inputContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: 'white',
+        borderRadius: 24,
+        borderWidth: 1,
+        borderColor: '#D1D5DB',
+        height: 50,
+        paddingHorizontal: 12,
+    },
+    inputField: {
+        flex: 1,
+        color: '#6B7280',
+        fontSize: 16,
+        paddingVertical: 10,
+    },
+
+    inputIcon: { 
+        width: 24, 
+        height: 28,
+        marginRight: 10, 
+    },
+    
+    // botões e links
+    registerButton: {
+        backgroundColor: '#7E22CE',
+        borderRadius: 24,
+        height: 60,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 40,
+        marginBottom: 20,
+        shadowColor: '#6A3DE84D', 
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 6,
+        elevation: 6, 
+    },
+    registerButtonText: {
+        color: 'white',
+        fontSize: 18,
+        fontWeight: '700',
+        lineHeight: 28,
+    },
+    loginLinkContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 30,
+    },
+    loginLinkText: {
+        color: '#4B5563',
+        fontSize: 16,
+        marginRight: 5,
+    },
+    loginLinkButton: {
+        color: '#FF9900', 
+        fontSize: 16,
+        fontWeight: '700',
+    },
+    buttonDisabled: {
+        opacity: 0.6,
+    },
+});
+

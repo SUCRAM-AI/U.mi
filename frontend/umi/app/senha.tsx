@@ -14,6 +14,7 @@ import {
     ActivityIndicator,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useAuth } from '@contexts/AuthContext';
 
 const  Lyricsthink = require('@assets/images/thinklyrics.png');
 import EmailIconSVG from '@assets/images/user_icon.svg'; 
@@ -25,23 +26,41 @@ const PasswordRecoveryScreen = () => {
     const [email, setEmail] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
+    const { generatePasswordResetToken } = useAuth();
     
-    const handleRecovery = () => {
+    const handleRecovery = async () => {
         if (!email.trim()) {
             Alert.alert('Erro', 'Por favor, insira seu email');
             return;
         }
         
         setIsLoading(true);
-        // Simular envio de email
-        setTimeout(() => {
+        try {
+            const token = await generatePasswordResetToken(email.trim());
+            if (token) {
+                // Em produção, o token seria enviado por email
+                // Por enquanto, apenas logamos no console para desenvolvimento
+                console.log(`[DEV] Token de recuperação para ${email}: ${token}`);
+                
+                Alert.alert(
+                    'Token enviado!', 
+                    `Enviamos um token de 6 dígitos para ${email}\n\nVerifique sua caixa de entrada.`,
+                    [{ 
+                        text: 'OK', 
+                        onPress: () => router.push({
+                            pathname: '/verificar-token',
+                            params: { email: email.trim() }
+                        })
+                    }]
+                );
+            } else {
+                Alert.alert('Erro', 'Email não encontrado. Verifique se o email está correto.');
+            }
+        } catch (error) {
+            Alert.alert('Erro', 'Ocorreu um erro ao enviar o token');
+        } finally {
             setIsLoading(false);
-            Alert.alert(
-                'Email enviado!', 
-                'Verifique sua caixa de entrada para redefinir sua senha.',
-                [{ text: 'OK', onPress: () => router.push('/login') }]
-            );
-        }, 1500);
+        }
     };
     
     return (

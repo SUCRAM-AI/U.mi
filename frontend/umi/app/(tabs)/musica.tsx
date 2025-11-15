@@ -10,6 +10,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@contexts/AuthContext';
@@ -107,7 +108,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fbfaff',
   },
   scrollContent: {
-    paddingTop: 80,
+    paddingTop: Platform.OS === 'ios' ? 116 : 96,
     paddingBottom: 100,
     flexGrow: 1,
   },
@@ -116,7 +117,8 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    height: 72,
+    paddingTop: Platform.OS === 'ios' ? 44 : 24, // Safe area para iOS, StatusBar para Android
+    height: Platform.OS === 'ios' ? 116 : 96, // paddingTop + 72 (altura do header)
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',

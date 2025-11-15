@@ -9,6 +9,7 @@ import {
   StyleSheet,
   ScrollView,
   SafeAreaView,
+  Platform,
 } from 'react-native';
 import MenuIcon from '@assets/images/config.svg';
 import IconeConfig from '@assets/images/people.svg';
@@ -60,6 +61,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fbfaff',
   },
   scrollContent: {
+    paddingTop: Platform.OS === 'ios' ? 116 : 96,
     paddingBottom: 100,
     flexGrow: 1,
   },
@@ -68,7 +70,8 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    height: 72,
+    paddingTop: Platform.OS === 'ios' ? 44 : 24, // Safe area para iOS, StatusBar para Android
+    height: Platform.OS === 'ios' ? 116 : 96, // paddingTop + 72 (altura do header)
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -110,7 +113,6 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   content: {
-    marginTop: 100,
     padding: 20,
     gap: 16,
   },
