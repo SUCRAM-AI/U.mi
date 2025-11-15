@@ -1,33 +1,57 @@
-import React, {useState} from "react";
-import { SafeAreaView, View, ScrollView, ImageBackground, Image, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from "react-native";
-import { useRouter } from 'expo-router';
+import React, {useState, useEffect} from "react";
+import { SafeAreaView, View, ScrollView, Image, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from "react-native";
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useAuth } from '@contexts/AuthContext';
 
 import LogoUMISVG from '@assets/images/logo_umi.svg';
-import UserIconSVG from '@assets/images/user_icon.svg';
 import PasswordIconSVG from '@assets/images/passwordicon.svg';
 
 //importações das imagens locais 
 const lyricsbosque = require('@assets/images/lyrics2.png'); 
 
 
-export default function RegisterScreen() {
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
+export default function NovaSenhaScreen() {
+    const params = useLocalSearchParams();
+    const email = (params.email as string) || '';
+    const token = (params.token as string) || '';
+    
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const { register } = useAuth();
+    const { resetPassword, verifyPasswordResetToken } = useAuth();
     const router = useRouter();
 
-    const handleRegister = async () => {
-        if (!name.trim()) {
-            Alert.alert('Erro', 'Por favor, insira seu nome');
+    // Verificar token ao carregar a tela
+    useEffect(() => {
+        const verifyTokenOnLoad = async () => {
+            if (!email || !token) {
+                Alert.alert('Erro', 'Dados inválidos', [
+                    { text: 'OK', onPress: () => router.replace('/senha') }
+                ]);
+                return;
+            }
+
+            const isValid = await verifyPasswordResetToken(email, token);
+            if (!isValid) {
+                Alert.alert('Erro', 'Token inválido ou expirado', [
+                    { text: 'OK', onPress: () => router.replace('/senha') }
+                ]);
+            }
+        };
+
+        verifyTokenOnLoad();
+    }, [email, token]);
+
+    const handleResetPassword = async () => {
+        // Verificar token novamente antes de redefinir
+        const isValid = await verifyPasswordResetToken(email, token);
+        if (!isValid) {
+            Alert.alert('Erro', 'Token inválido ou expirado. Por favor, solicite um novo token.');
+            router.replace('/senha');
             return;
         }
-        
-        if (!email.trim()) {
-            Alert.alert('Erro', 'Por favor, insira seu email');
+        if (!password.trim()) {
+            Alert.alert('Erro', 'Por favor, insira sua nova senha');
             return;
         }
         
@@ -43,15 +67,16 @@ export default function RegisterScreen() {
         
         setIsLoading(true);
         try {
-            const success = await register(name, email, password);
+            const success = await resetPassword(email, password);
             if (success) {
-                // Após cadastro bem-sucedido, usuário já está logado, redirecionar para trilha
-                router.replace('/(tabs)/trilha');
+                Alert.alert('Sucesso', 'Senha redefinida com sucesso!', [
+                    { text: 'OK', onPress: () => router.replace('/login') }
+                ]);
             } else {
-                Alert.alert('Erro', 'Este email já está cadastrado');
+                Alert.alert('Erro', 'Não foi possível redefinir a senha. Tente novamente.');
             }
         } catch (error) {
-            Alert.alert('Erro', 'Ocorreu um erro ao criar a conta');
+            Alert.alert('Erro', 'Ocorreu um erro ao redefinir a senha');
         } finally {
             setIsLoading(false);
         }
@@ -61,9 +86,8 @@ export default function RegisterScreen() {
         <SafeAreaView style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollViewContent}>
                 
-                {}
                 <Image 
-                    source={lyricsbosque} // Imagem 
+                    source={lyricsbosque} 
                     style={styles.headerBackground} 
                 />
 
@@ -81,49 +105,13 @@ export default function RegisterScreen() {
                         <Text style={styles.logoText}>U.Mi</Text>
                     </View>
 
-                    <Text style={styles.welcomeText}>Vamos criar sua conta!</Text>
+                    <Text style={styles.welcomeText}>Redefinir Senha</Text>
                     
-                    {/* Formulário de Nome */}
-                    <Text style={styles.label}>Nome</Text>
-                    <View style={styles.inputContainer}>
-                        <UserIconSVG 
-                            width={24} // Define o tamanho exato do ícone
-                            height={28}
-                            style={styles.inputIcon} // estilo para dar o espaçamento correto
-                        />
-                       
-                        <TextInput
-                            placeholder="usuario123"
-                            value={name}
-                            onChangeText={setName}
-                            style={styles.inputField}
-                        />
-                    </View>
-
-                    {/* Formulário de Email */}
-                    <Text style={styles.label}>Email</Text>
-                    <View style={styles.inputContainer}>
-                        <UserIconSVG 
-                            width={24} // Define o tamanho exato do ícone
-                            height={28}
-                            style={styles.inputIcon} // Estilo para dar o espaçamento correto
-                        />
-                        
-                        <TextInput
-                            placeholder="voce@exemplo.com"
-                            value={email}
-                            onChangeText={setEmail}
-                            style={styles.inputField}
-                            keyboardType="email-address"
-                        />
-                    </View>
-
                     {/* Formulário de Senha */}
-                    <Text style={styles.label}>Senha</Text>
+                    <Text style={styles.label}>Nova Senha</Text>
                     <View style={styles.inputContainer}>
                         <PasswordIconSVG
-
-                            width={24} // Define o tamanho exato do ícone
+                            width={24}
                             height={24}
                             style={styles.inputIcon} 
                         /> 
@@ -137,13 +125,12 @@ export default function RegisterScreen() {
                     </View>
 
                     {/*Formulário de Confirmação de Senha */}
-                    <Text style={styles.label}>Confirmar Senha</Text>
+                    <Text style={styles.label}>Confirmar Nova Senha</Text>
                     <View style={styles.inputContainer}>
                          <PasswordIconSVG
-                         
-                            width={24} // Define o tamanho exato do ícone
+                            width={24}
                             height={24}
-                            style={styles.inputIcon} // Estilo para dar o espaçamento correto
+                            style={styles.inputIcon}
                         /> 
                         <TextInput
                             placeholder="••••••••"
@@ -154,24 +141,24 @@ export default function RegisterScreen() {
                         />
                     </View>
 
-                    {/*Botão Cadastrar */}
+                    {/*Botão Redefinir */}
                     <TouchableOpacity 
                         style={[styles.registerButton, isLoading && styles.buttonDisabled]} 
-                        onPress={handleRegister}
+                        onPress={handleResetPassword}
                         disabled={isLoading}
                     >
                         {isLoading ? (
                             <ActivityIndicator color="#FFFFFF" />
                         ) : (
-                            <Text style={styles.registerButtonText}>Cadastrar</Text>
+                            <Text style={styles.registerButtonText}>Redefinir Senha</Text>
                         )}
                     </TouchableOpacity>
                     
                     {/*Link para Login */}
                     <View style={styles.loginLinkContainer}>
-                        <Text style={styles.loginLinkText}>Já tenho uma conta?</Text>
+                        <Text style={styles.loginLinkText}>Lembrou sua senha?</Text>
                         <TouchableOpacity onPress={() => router.push('/login')}>
-                            <Text style={styles.loginLinkButton}>Entrar</Text>
+                            <Text style={styles.loginLinkButton}>Fazer Login</Text>
                         </TouchableOpacity>
                     </View>
 
@@ -184,24 +171,24 @@ export default function RegisterScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F7F6F8', // Cor de fundo do body
+        backgroundColor: '#F7F6F8',
     },
     scrollViewContent: {
-        paddingBottom: 100, // Espaço no final para que a ScrollView não corte o botão
-        flexGrow: 1, // Garantir que o conteúdo possa crescer e permitir scroll quando necessário
+        paddingBottom: 100,
+        flexGrow: 1,
     },
     
     //ELEMENTOS DE HEADER ABSOLUTO 
     headerBackground: {
         width: '100%',
-        height: 364, // Altura da imagem de fundo
+        height: 364,
         opacity: 0.30,
     },
     rectangleWhite: {
         width: '100%',
         height: 617,
         position: 'absolute',
-        top: 299, // Posição onde a área branca começa a cobrir a imagem
+        top: 299,
         backgroundColor: 'white',
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30,
@@ -220,18 +207,13 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         marginBottom: 10,
     },
-    logoIconPlaceholder: {
-        width: 34,
-        height: 44,
-        marginRight: 6,
-        backgroundColor: 'transparent', // Substitua por seu ícone real
-    },
     logoText: {
         color: '#20123C',
         fontSize: 30,
         fontWeight: '700', 
         fontFamily: 'Lexend', 
         lineHeight: 36,
+        marginLeft: 6,
     },
     welcomeText: {
         color: '#374053',
@@ -260,12 +242,6 @@ const styles = StyleSheet.create({
         height: 50,
         paddingHorizontal: 12,
     },
-    inputIconPlaceholder: {
-        width: 24,
-        height: 28,
-        marginRight: 10,
-        backgroundColor: 'transparent',
-    },
     inputField: {
         flex: 1,
         color: '#6B7280',
@@ -274,10 +250,10 @@ const styles = StyleSheet.create({
     },
 
     inputIcon: { 
-    width: 24, 
-    height: 28,
-    marginRight: 10, 
-},
+        width: 24, 
+        height: 28,
+        marginRight: 10, 
+    },
     
     // botões e links
     registerButton: {
@@ -320,3 +296,4 @@ const styles = StyleSheet.create({
         opacity: 0.6,
     },
 });
+

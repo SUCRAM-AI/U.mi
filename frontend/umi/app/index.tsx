@@ -10,6 +10,11 @@ export default function Index() {
     return null; // Ou um componente de loading
   }
   
-  // Sempre começa na tela de login (primeira tela)
+  // Se autenticado, vai direto para a trilha teórica
+  if (isAuthenticated) {
+    return <Redirect href="/(tabs)/trilha" />;
+  }
+  
+  // Se não autenticado, vai para o login
   return <Redirect href="/login" />;
 }

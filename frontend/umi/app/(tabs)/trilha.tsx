@@ -4,6 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@contexts/AuthContext';
 import SettingsModal from '@components/settings-modal';
+import { getLessonsBySection } from '@config/lessons';
 
 
 // Recursos SVG (Importados como Componentes)
@@ -18,7 +19,6 @@ import IconeCadeadoCinza from '@assets/images/cadeadocinza.svg'; // Usado no cí
 import IconeHarmonia from '@assets/images/harmonia.svg';
 import IconeCadeadoHarmonia from '@assets/images/cadeadocinza.svg'; // Usado no círculo de harmonia
 import IconeProgresso from '@assets/images/progresso.svg'; // Lição 3
-import IconeBloqueio from '@assets/images/cadeadobranco.svg'; 
 import MenuIcon from '@assets/images/people.svg'; // Menu Header
 import IconeConfig from '@assets/images/config.svg'; // Config Header
 import IconeNotas from '@assets/images/icongray.svg';
@@ -52,19 +52,37 @@ const TrilhaTeoria = () => {
     router.replace('/login');
   };
   
+  // Verificar se todas as lições de uma seção foram completadas
+  const isSectionCompleted = (sectionNumber: number): boolean => {
+    if (!user || !user.completedLessons) return false;
+    
+    const sectionLessons = getLessonsBySection(sectionNumber.toString());
+    if (sectionLessons.length === 0) return false;
+    
+    // Verificar se todas as lições da seção foram completadas
+    return sectionLessons.every((lesson: any) => 
+      user.completedLessons.includes(lesson.id)
+    );
+  };
+
   // Determinar o estado de cada seção baseado no progresso
-  // Por enquanto, apenas a seção 1 está disponível (em progresso)
   const getSectionStatus = (sectionNumber: number) => {
-    // TODO: Implementar lógica baseada no progresso real do usuário
-    // Por enquanto:
-    // - Seção 1: em progresso (disponível)
-    // - Seções 2-5: bloqueadas até a seção anterior ser concluída
+    // Seção 1 sempre está disponível
     if (sectionNumber === 1) {
-      return 'in_progress'; // Em progresso
+      const completed = isSectionCompleted(1);
+      return completed ? 'completed' : 'in_progress';
     }
+    
     // Verificar se a seção anterior foi concluída
-    // Por enquanto, todas as outras estão bloqueadas
-    return 'locked'; // Bloqueada
+    const previousSectionCompleted = isSectionCompleted(sectionNumber - 1);
+    
+    if (!previousSectionCompleted) {
+      return 'locked'; // Bloqueada se a seção anterior não foi completada
+    }
+    
+    // Se a seção anterior foi completada, esta seção está disponível
+    const currentSectionCompleted = isSectionCompleted(sectionNumber);
+    return currentSectionCompleted ? 'completed' : 'in_progress';
   };
 
   const handleSectionClick = (sectionNumber: number) => {
@@ -105,8 +123,13 @@ const TrilhaTeoria = () => {
               />
               <View style={styles.progressTextContainer}>
                 <Text style={styles.seuProgresso45}>
-                  Seu Progresso: 0%
+                  Seu Progresso: {Math.round(progressPercentage)}%
                 </Text>
+                <View style={styles.progressBarContainer}>
+                  <View style={styles.progressBarBackground}>
+                    <View style={[styles.progressBarFill, { width: `${progressPercentage}%` }]} />
+                  </View>
+                </View>
                 <Text style={styles.cadaLicaoUmPassoEmDirecaoMaestria}>
                   Cada lição é um passo em direção à maestria!
                 </Text>
@@ -132,15 +155,6 @@ const TrilhaTeoria = () => {
               </TouchableOpacity>
               <Text style={[styles.lessonText, styles.pos1Text, { color: '#f97316' }]}>Fundamentos Físicos</Text>
               <Text style={[styles.pos1SubText]}>Em Progresso</Text>
-
-              {/* Ícone de Progresso/Status para Lição 1 */}
-              <LinearGradient
-                colors={['rgba(16, 185, 129, 1)', 'rgba(255, 255, 255, 1)']}
-                start={{ x: 0.0, y: 0.0 }}
-                end={{ x: 1.0, y: 1.0 }}
-                style={[styles.pos1Badge]}>
-                <IconeProgresso width={16} height={16} style={styles.icon18} />
-              </LinearGradient>
 
 
               {/* Lição 2: Base Harmônica (Bloqueada Cinza Opaco) */}
@@ -186,24 +200,6 @@ const TrilhaTeoria = () => {
               <Text style={[styles.pos5SubText]}>Fechado</Text>
 
             </View>
-
-            {/* Bloco Modo Música */}
-            <View style={styles.modoMusicaContainer}>
-              <TouchableOpacity onPress={() => router.push('/(tabs)/musica')}>
-                <LinearGradient
-                  colors={['rgba(147, 51, 234, 1)', 'rgba(192, 132, 252, 1)']}
-                  start={{ x: 0.0, y: 0.0 }}
-                  end={{ x: 1.0, y: 1.0 }}
-                  style={styles.button}>
-                  <Text style={styles.modoMusica}>Modo Música</Text>
-                  {/* Overlay de Bloqueio */}
-                  <View style={styles.overlayOverlayBlur}>
-                    <IconeBloqueio width={36} height={36} style={styles.icon20} />
-                    <Text style={styles._70ModoMusica}>70% → Modo Música.</Text>
-                  </View>
-                </LinearGradient>
-              </TouchableOpacity>
-            </View>
           </View>
         </View>
       </ScrollView>
@@ -228,11 +224,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#fbfaff',
   },
   scrollContent: {
-    paddingBottom: 95, // Espaço após o botão do modo música
+    paddingBottom: 120, // Espaço após o último botão para permitir scroll completo
     flexGrow: 1,
   },
   container: {
-    paddingTop: 72, // Espaço para o Header
+    paddingTop: Platform.OS === 'ios' ? 116 : 96, // Espaço para o Header + Status Bar (iOS: 44+72, Android: 24+72)
   },
   main: {
     paddingHorizontal: 16,
@@ -247,7 +243,8 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    height: 72,
+    paddingTop: Platform.OS === 'ios' ? 44 : 24, // Safe area para iOS, StatusBar para Android
+    height: Platform.OS === 'ios' ? 116 : 96, // paddingTop + 72 (altura do header)
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -317,9 +314,26 @@ const styles = StyleSheet.create({
     fontFamily: 'Lexend-Bold', 
     fontSize: 20,
     fontWeight: '700',
-    marginBottom: 6,
+    marginBottom: 8,
     width: '100%',
     lineHeight: 26,
+  },
+  progressBarContainer: {
+    width: '100%',
+    marginBottom: 8,
+  },
+  progressBarBackground: {
+    width: '100%',
+    height: 8,
+    backgroundColor: '#e5e7eb',
+    borderRadius: 4,
+    overflow: 'hidden',
+  },
+  progressBarFill: {
+    height: '100%',
+    backgroundColor: '#7e22ce',
+    borderRadius: 4,
+    transition: 'width 0.3s ease',
   },
   cadaLicaoUmPassoEmDirecaoMaestria: {
     color: '#4a4a68',
@@ -328,6 +342,7 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     width: '100%',
     lineHeight: 22,
+    marginTop: 4,
   },
   unnamedRemovebgPreview1: {
     width: 100,
@@ -339,14 +354,14 @@ const styles = StyleSheet.create({
 
   // Container da Trilha
   container2: {
-    minHeight: 550, // Altura mínima, mas permite crescer
+    minHeight: 1020, // Altura suficiente para incluir o último botão (pos5SubText em top: 960 + espaço)
     alignItems: 'center',
     paddingHorizontal: 0,
     position: 'relative',
     alignSelf: 'center',
     width: '100%',
     justifyContent: 'flex-start',
-    paddingBottom: 0, // Sem espaço extra após o botão do modo música
+    paddingBottom: 40, // Espaço extra após o último botão
   },
   svg1: {
     width: 80,
@@ -438,19 +453,21 @@ const styles = StyleSheet.create({
     position: 'absolute',
     backgroundColor: 'transparent' 
   },
-  pos1: { top: 0, left: '50%', marginLeft: -40, alignSelf: 'center' },
-  pos1Text: { top: 88, left: '50%', marginLeft: -75, textAlign: 'center', zIndex: 10, alignSelf: 'center' },
-  pos1SubText: { position: 'absolute', top: 135, left: '50%', marginLeft: -75, color: '#6b7280', fontSize: 14, fontWeight: '500', width: 150, textAlign: 'center', zIndex: 10, alignSelf: 'center' },
+  pos1: { top: 0, alignSelf: 'center' },
+  pos1Text: { top: 88, textAlign: 'center', zIndex: 10, alignSelf: 'center', width: '100%', paddingHorizontal: 16 },
+  pos1SubText: { position: 'absolute', top: 110, color: '#6b7280', fontSize: 14, fontWeight: '500', width: '100%', textAlign: 'center', zIndex: 10, alignSelf: 'center', paddingHorizontal: 16 },
   pos1Rect: { top: 91, left: '50%', marginLeft: -68, width: 136 },
   pos1Badge: { 
-    width: 20, 
-    height: 20, 
+    width: 28, 
+    height: 28, 
     borderRadius: 9999, 
     position: 'absolute', 
-    top: 57, 
-    right: 140,
+    right: -8, 
+    top: -8,
     alignItems: 'center',
     justifyContent: 'center',
+    zIndex: 9999,
+    elevation: 10, // Para Android
   },
 
   // Lição 2: Intervalos
@@ -595,67 +612,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center'
   },
   pos5SubText: { position: 'absolute', top: 960, left: '50%', marginLeft: -65.5, color: '#6b7280', opacity: 0.6, fontSize: 14, fontWeight: '500', width: 131, textAlign: 'center', zIndex: 10, alignSelf: 'center' },
-
-  // Container do Modo Música
-  modoMusicaContainer: {
-    width: '100%',
-    marginTop: 450,
-    marginBottom: 0,
-    paddingHorizontal: 16,
-    alignSelf: 'stretch',
-  },
-  button: {
-    borderRadius: 48,
-    height: 84,
-    marginHorizontal: 0,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.1,
-    shadowRadius: 15,
-    elevation: 10,
-    overflow: 'hidden',
-  },
-  modoMusica: {
-    color: 'rgba(255, 255, 255, 0.7)',
-    fontFamily: 'Lexend-Bold', 
-    fontSize: 24,
-    fontWeight: '700',
-    position: 'absolute',
-    left: 95,
-    top: 17,
-  },
-  theUltimateChallenge: {
-    color: 'rgba(255, 255, 255, 0.5)',
-    fontFamily: 'Lexend-Regular', 
-    fontSize: 14,
-    fontWeight: '400',
-    position: 'absolute',
-    left: 100,
-    top: 49,
-  },
-  icon19: { width: 48, height: 58, position: 'absolute', left: 20, top: 13, transform: [{ scaleY: -1 }], resizeMode: 'contain' },
-
-  // Overlay de Bloqueio
-  overlayOverlayBlur: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    borderRadius: 48,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  icon20: { width: 36, height: 44, position: 'absolute', top: 5, resizeMode: 'contain' },
-  _70ModoMusica: {
-    color: '#ffffff',
-    fontFamily: 'Lexend-SemiBold', 
-    fontSize: 16,
-    fontWeight: '600',
-    position: 'absolute',
-    top: 50,
-  },
 });
 
 export default TrilhaTeoria;

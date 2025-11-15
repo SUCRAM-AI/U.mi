@@ -8,9 +8,11 @@ import { TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAudioRecorder } from '@hooks/use-audio-recorder';
 import { detectChord } from '@services/api';
+import { isChordMatch } from '../../utils/chordUtils';
 
 interface MicrophoneInputProps {
   onDetect?: (result: { chord: string; success: boolean }) => void;
+  onComplete?: () => void;
   expectedChord?: string;
   label?: string;
   buttonText?: string;
@@ -19,6 +21,7 @@ interface MicrophoneInputProps {
 
 export function MicrophoneInput({
   onDetect,
+  onComplete,
   expectedChord,
   label = 'Gravar Áudio',
   buttonText,
@@ -50,18 +53,35 @@ export function MicrophoneInput({
       const result = await detectChord(uri);
       
       if (result.success && result.chord) {
+        // Usar função de comparação inteligente que normaliza acordes
         const isCorrect = expectedChord 
-          ? result.chord.toLowerCase().includes(expectedChord.toLowerCase()) ||
-            expectedChord.toLowerCase().includes(result.chord.toLowerCase())
+          ? isChordMatch(result.chord, expectedChord)
           : true;
 
         onDetect?.({ chord: result.chord, success: isCorrect });
 
-        if (expectedChord && !isCorrect) {
-          Alert.alert(
-            'Tente novamente',
-            `Detectado: ${result.chord}\nEsperado: ${expectedChord}`
-          );
+        if (expectedChord) {
+          if (isCorrect) {
+            // Acorde correto - marcar lição como completa
+            Alert.alert(
+              '✅ Correto!',
+              `Você tocou ${result.chord} corretamente!`,
+              [
+                {
+                  text: 'OK',
+                  onPress: () => {
+                    onComplete?.();
+                  },
+                },
+              ]
+            );
+          } else {
+            // Acorde incorreto
+            Alert.alert(
+              'Tente novamente',
+              `Detectado: ${result.chord}\nEsperado: ${expectedChord}`
+            );
+          }
         }
       } else {
         Alert.alert('Erro', 'Não foi possível detectar o acorde');

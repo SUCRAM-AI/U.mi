@@ -15,12 +15,15 @@ export function normalizeChord(chord: string): string {
   // Remover espaços extras
   normalized = normalized.replace(/\s+/g, '');
   
+  // Normalizar formato "C:maj" -> "C" (remover dois pontos e maj)
+  normalized = normalized.replace(/[:;]/g, '');
+  
   // Normalizar variações comuns de acordes menores
   // "emin" -> "em", "e-minor" -> "em", "e minor" -> "em"
   normalized = normalized.replace(/minor|min|-minor|-min/g, 'm');
   
   // Normalizar variações de acordes maiores
-  // "emajor" -> "e", "e-major" -> "e", "e major" -> "e"
+  // "emajor" -> "e", "e-major" -> "e", "e major" -> "e", "cmaj" -> "c", "c:maj" -> "c"
   normalized = normalized.replace(/major|maj|-major|-maj/g, '');
   
   // Remover parênteses e outros caracteres especiais

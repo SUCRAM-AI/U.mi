@@ -13,51 +13,47 @@ import {
     Alert,
     ActivityIndicator,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useAuth } from '@contexts/AuthContext';
 
-const  Lyricsthink = require('@assets/images/thinklyrics.png');
-import EmailIconSVG from '@assets/images/user_icon.svg'; 
+const Lyricsthink = require('@assets/images/thinklyrics.png');
 import LogoUMISVG from '@assets/images/logo_umi.svg';
 
 const { width, height } = Dimensions.get('window');
 
-const PasswordRecoveryScreen = () => {
-    const [email, setEmail] = useState('');
+const VerifyTokenScreen = () => {
+    const params = useLocalSearchParams();
+    const email = (params.email as string) || '';
+    const [token, setToken] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
-    const { generatePasswordResetToken } = useAuth();
+    const { verifyPasswordResetToken } = useAuth();
     
-    const handleRecovery = async () => {
-        if (!email.trim()) {
-            Alert.alert('Erro', 'Por favor, insira seu email');
+    const handleVerifyToken = async () => {
+        if (!token.trim()) {
+            Alert.alert('Erro', 'Por favor, insira o token');
+            return;
+        }
+
+        if (token.length !== 6) {
+            Alert.alert('Erro', 'O token deve ter 6 dígitos');
             return;
         }
         
         setIsLoading(true);
         try {
-            const token = await generatePasswordResetToken(email.trim());
-            if (token) {
-                // Em produção, o token seria enviado por email
-                // Por enquanto, apenas logamos no console para desenvolvimento
-                console.log(`[DEV] Token de recuperação para ${email}: ${token}`);
-                
-                Alert.alert(
-                    'Token enviado!', 
-                    `Enviamos um token de 6 dígitos para ${email}\n\nVerifique sua caixa de entrada.`,
-                    [{ 
-                        text: 'OK', 
-                        onPress: () => router.push({
-                            pathname: '/verificar-token',
-                            params: { email: email.trim() }
-                        })
-                    }]
-                );
+            const isValid = await verifyPasswordResetToken(email, token.trim());
+            if (isValid) {
+                // Token válido, redirecionar para tela de nova senha
+                router.push({
+                    pathname: '/nova-senha',
+                    params: { email: email, token: token.trim() }
+                });
             } else {
-                Alert.alert('Erro', 'Email não encontrado. Verifique se o email está correto.');
+                Alert.alert('Erro', 'Token inválido ou expirado. Tente novamente.');
             }
         } catch (error) {
-            Alert.alert('Erro', 'Ocorreu um erro ao enviar o token');
+            Alert.alert('Erro', 'Ocorreu um erro ao verificar o token');
         } finally {
             setIsLoading(false);
         }
@@ -67,10 +63,8 @@ const PasswordRecoveryScreen = () => {
         <SafeAreaView style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollViewContent}>
                 <View style={styles.login3}>
-                    {/* ratangulo */}
                     <View style={styles.rectangle4} />
 
-                    {/* U.Mi Seção Logo */}
                     <View style={styles.umiContainer}>
                         <LogoUMISVG 
                             width={34} 
@@ -79,68 +73,55 @@ const PasswordRecoveryScreen = () => {
                         <Text style={styles.umi}>U.Mi</Text>
                     </View>
 
-                    {/* Main Content Container */}
                     <View style={styles.container01}>
                         <Image
                             style={styles.recoveryImage}
                             source={Lyricsthink}
                         />
                         
-                        {/* Heading 1 (Esqueceu sua senha?) */}
                         <Text style={styles.heading1}>
-                            Esqueceu sua senha?
+                            Verificar Token
                         </Text>
 
-                        {/* Instructional Text */}
                         <Text style={styles.instructionText}>
-                            Sem problemas! Insira seu e-mail abaixo e enviaremos um link para redefinir sua senha.
+                            Digite o token de 6 dígitos que foi enviado para {email}
                         </Text>
 
-                        {/* Form Container */}
                         <View style={styles.form}>
-                            {/* Label E-mail */}
-                            <Text style={styles.labelEmailOrUsername}>E-mail</Text>
+                            <Text style={styles.labelEmailOrUsername}>Token</Text>
 
-                            {/* Input */}
                             <View style={styles.input}>
-                                <EmailIconSVG 
-                                    width={24} 
-                                    height={28} 
-                                    style={styles.inputIcon}
-                                />
                                 <TextInput
                                     style={styles.inputPlaceholderText}
-                                    placeholder="voce@exemplo.com"
+                                    placeholder="000000"
                                     placeholderTextColor="#6B7280"
-                                    keyboardType="email-address"
-                                    autoCapitalize="none"
-                                    value={email}
-                                    onChangeText={setEmail}
+                                    keyboardType="number-pad"
+                                    maxLength={6}
+                                    value={token}
+                                    onChangeText={setToken}
                                 />
                             </View>
 
-                            {/* Recovery Button */}
                             <TouchableOpacity 
                                 style={[styles.button, isLoading && styles.buttonDisabled]}
-                                onPress={handleRecovery}
+                                onPress={handleVerifyToken}
                                 disabled={isLoading}
                             >
                                 {isLoading ? (
                                     <ActivityIndicator color="#FFFFFF" />
                                 ) : (
                                     <Text style={styles.enviarLinkDeRecuperacao}>
-                                        Enviar link de recuperação
+                                        Verificar Token
                                     </Text>
                                 )}
                             </TouchableOpacity>
 
-                            {/* Back to Login Link */}
                             <TouchableOpacity 
                                 style={styles.voltarAoLoginContainer}
-                                onPress={() => router.push('/login')}
+                                onPress={() => router.push('/senha')}
                             >
                                 <Text style={styles.voltarAoLogin}>
-                                    Voltar ao login
+                                    Voltar
                                 </Text>
                             </TouchableOpacity>
                         </View>
@@ -165,14 +146,11 @@ const styles = StyleSheet.create({
         position: 'relative',
         backgroundColor: '#F7F6F8', 
     },
-    
-    //  Top Section (U.Mi Logo) 
     umiContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
         marginTop: 50,
-
         width: '100%',
     },
     umi: {
@@ -183,16 +161,12 @@ const styles = StyleSheet.create({
         lineHeight: 36,
         marginLeft: 6,
     },
-
-    // Main Container 
     container01: {
         width: '100%',
         paddingHorizontal: 24,
         alignItems: 'center',
         marginTop: 0,
     },
-    
-    //White Background Panel 
     rectangle4: {
         width: '100%',
         height: height * 0.6,
@@ -202,7 +176,6 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30,
     },
-
     recoveryImage: {
         width: width * 0.75,
         height: 192,
@@ -230,7 +203,6 @@ const styles = StyleSheet.create({
         marginBottom: 30,
         paddingHorizontal: 20,
     },
-    // Form Container 
     form: {
         width: '100%',
         maxWidth: 339,
@@ -245,7 +217,6 @@ const styles = StyleSheet.create({
         marginBottom: 8,
         marginLeft: 2,
     },
-    //Input Field 
     input: {
         width: '100%',
         height: 50,
@@ -258,18 +229,15 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         marginBottom: 20,
     },
-    inputIcon: {
-        marginRight: 10,
-    },
     inputPlaceholderText: {
         flex: 1,
         fontSize: 16,
         fontFamily: 'Lexend',
         fontWeight: '400',
         color: '#6B7280',
+        textAlign: 'center',
+        letterSpacing: 8,
     },
-
-    //  Button
     button: {
         width: '100%',
         height: 60,
@@ -299,8 +267,6 @@ const styles = StyleSheet.create({
         lineHeight: 28,
         textAlign: 'center',
     },
-    
-    // Back to Login Link 
     voltarAoLoginContainer: {
         justifyContent: 'center',
         alignItems: 'center',
@@ -319,4 +285,5 @@ const styles = StyleSheet.create({
     },
 });
 
-export default PasswordRecoveryScreen;
+export default VerifyTokenScreen;
+

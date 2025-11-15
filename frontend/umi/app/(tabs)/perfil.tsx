@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text, Image, ScrollView, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, Image, ScrollView, TouchableOpacity, Platform } from 'react-native';
 import { useAuth } from '@contexts/AuthContext';
 
 
@@ -164,7 +164,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    height: 72,
+    paddingTop: Platform.OS === 'ios' ? 44 : 24, // Safe area para iOS, StatusBar para Android
+    height: Platform.OS === 'ios' ? 116 : 96, // paddingTop + 72 (altura do header)
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -206,7 +207,7 @@ const styles = StyleSheet.create({
 
   main: {
     flex: 1,
-    marginTop: 72, 
+    marginTop: Platform.OS === 'ios' ? 116 : 96, // Espaço para o Header + Status Bar
     marginBottom: 85, 
     paddingHorizontal: 16,
   },

@@ -15,6 +15,7 @@ import {
 import { Audio } from 'expo-av';
 import { AudioRecorderButton } from './audio-recorder-button';
 import { detectChord } from '../services/api';
+import { isChordMatch } from '../utils/chordUtils';
 import Play from '../assets/images/play.svg';
 
 interface ChordDetectionExerciseProps {
@@ -45,7 +46,8 @@ export function ChordDetectionExercise({
 
         // Verificar se está correto (se esperado foi fornecido)
         if (expectedChord) {
-          const isCorrect = result.chord.toLowerCase() === expectedChord.toLowerCase();
+          // Usar função de comparação inteligente que normaliza acordes
+          const isCorrect = isChordMatch(result.chord, expectedChord);
           
           if (isCorrect) {
             Alert.alert('✅ Correto!', `Você tocou ${result.chord} corretamente!`, [
@@ -142,13 +144,13 @@ export function ChordDetectionExercise({
         <View
           style={[
             styles.feedbackContainer,
-            detectedChord.toLowerCase() === expectedChord.toLowerCase()
+            isChordMatch(detectedChord, expectedChord)
               ? styles.feedbackCorrect
               : styles.feedbackIncorrect,
           ]}
         >
           <Text style={styles.feedbackText}>
-            {detectedChord.toLowerCase() === expectedChord.toLowerCase()
+            {isChordMatch(detectedChord, expectedChord)
               ? '✅ Correto!'
               : '❌ Tente novamente'}
           </Text>
