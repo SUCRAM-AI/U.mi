@@ -27,7 +27,7 @@ export default () => {
         try {
             const success = await login(email, password);
             if (success) {
-                router.replace('/nivel');
+                router.replace('/(tabs)/trilha');
             } else {
                 Alert.alert('Erro', 'Não foi possível fazer login');
             }
@@ -42,7 +42,7 @@ export default () => {
         setIsLoading(true);
         try {
             await login('convidado@umi.com', '');
-            router.replace('/nivel');
+            router.replace('/(tabs)/trilha');
         } catch (error) {
             Alert.alert('Erro', 'Ocorreu um erro');
         } finally {

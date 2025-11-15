@@ -41,54 +41,6 @@ export default function TabLayout() {
           tabBarLabel: 'Perfil',
         }}
       />
-      <Tabs.Screen 
-        name="licao" 
-        options={{ 
-          href: null, // Esconder da tab bar
-        }}
-      />
-      <Tabs.Screen 
-        name="lesson-progression" 
-        options={{ 
-          href: null, // Esconder da tab bar
-        }}
-      />
-      <Tabs.Screen 
-        name="lesson1" 
-        options={{ 
-          href: null, // Esconder da tab bar
-        }}
-      />
-      <Tabs.Screen 
-        name="lesson2" 
-        options={{ 
-          href: null, // Esconder da tab bar
-        }}
-      />
-      <Tabs.Screen 
-        name="lesson3" 
-        options={{ 
-          href: null, // Esconder da tab bar
-        }}
-      />
-      <Tabs.Screen 
-        name="lesson4" 
-        options={{ 
-          href: null, // Esconder da tab bar
-        }}
-      />
-      <Tabs.Screen 
-        name="lesson5" 
-        options={{ 
-          href: null, // Esconder da tab bar
-        }}
-      />
-      <Tabs.Screen 
-        name="test-lessons" 
-        options={{ 
-          href: null, // Esconder da tab bar (tela de teste)
-        }}
-      />
     </Tabs>
   );
 }

@@ -9,14 +9,16 @@ const isWeb = typeof window !== 'undefined';
 
 // URL do backend - ajuste conforme necessário
 // Para web: use localhost ou 127.0.0.1
-// Para dispositivo móvel na mesma rede: use o IP da sua máquina (ex: http://192.168.0.7:5000/api)
+// Para dispositivo móvel na mesma rede: use o IP da sua máquina (http://192.168.0.7:5000/api)
 // Para usar tunnel (ngrok): defina EXPO_PUBLIC_API_URL com a URL do tunnel (ex: https://xxxx.ngrok.io/api)
 // OU atualize TUNNEL_URL diretamente abaixo com a URL do ngrok
-const TUNNEL_URL = process.env.EXPO_PUBLIC_API_URL || 'https://penetrative-cayson-geitonogamous.ngrok-free.dev/api'; // URL do tunnel (ngrok) se disponível
+const TUNNEL_URL = process.env.EXPO_PUBLIC_API_URL || 'https://penetrative-cayson-geitonogamous.ngrok-free.dev/api'; // URL do tunnel (ngrok)
+const LOCAL_IP = '192.168.0.7'; // IP da interface Wi-Fi (wlp4s0)
+
 export const API_BASE_URL = __DEV__ 
   ? (TUNNEL_URL 
       ? `${TUNNEL_URL}` // Usar tunnel se disponível
-      : (isWeb ? 'http://localhost:5000/api' : 'http://192.168.0.7:5000/api'))  // Desenvolvimento local
+      : (isWeb ? 'http://localhost:5000/api' : `http://${LOCAL_IP}:5000/api`))  // Desenvolvimento local
   : 'https://your-api-url.com/api';  // Produção (ajustar quando necessário)
 
 export interface DetectChordResponse {

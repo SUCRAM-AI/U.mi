@@ -13,8 +13,7 @@ function ChatBotWrapper() {
   // Não mostrar chatbot em telas de autenticação
   const hideChatbot = pathname === '/login' || 
                       pathname === '/cadastro' || 
-                      pathname === '/senha' || 
-                      pathname === '/nivel' ||
+                      pathname === '/senha' ||
                       !isAuthenticated;
   
   if (hideChatbot) return null;
@@ -30,7 +29,7 @@ function AppContent() {
         <Stack.Screen name="login" options={{ headerShown: false }} />
         <Stack.Screen name="cadastro" options={{ headerShown: false }} />
         <Stack.Screen name="senha" options={{ headerShown: false }} />
-        <Stack.Screen name="nivel" options={{ headerShown: false }} />
+        <Stack.Screen name="sections/[sectionId]" options={{ headerShown: false }} />
         <Stack.Screen name="lesson/[lessonId]" options={{ headerShown: false }} />
       </Stack>
       <ChatBotWrapper />

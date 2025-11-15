@@ -96,13 +96,6 @@ const TrilhaTeoria = () => {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.container}>
           <View style={styles.main}>
-            {/* Botão de teste temporário - remover depois */}
-            <TouchableOpacity
-              style={styles.testButton}
-              onPress={() => router.push('/(tabs)/test-lessons')}
-            >
-              <Text style={styles.testButtonText}>🧪 Testar Todas as Lições</Text>
-            </TouchableOpacity>
             {/* Bloco de Progresso */}
             <View style={styles.background}>
               <MascoteProgresso
@@ -662,28 +655,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     position: 'absolute',
     top: 50,
-  },
-  // Botão de teste
-  testButton: {
-    backgroundColor: '#F97316',
-    borderRadius: 12,
-    padding: 16,
-    marginTop: 16,
-    marginBottom: 24,
-    marginHorizontal: 0,
-    alignItems: 'center',
-    shadowColor: '#F97316',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
-    width: '100%',
-  },
-  testButtonText: {
-    fontSize: 16,
-    fontFamily: 'Lexend-Bold',
-    fontWeight: '700',
-    color: '#ffffff',
   },
 });
 
