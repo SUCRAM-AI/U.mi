@@ -10,8 +10,13 @@ const isWeb = typeof window !== 'undefined';
 // URL do backend - ajuste conforme necessário
 // Para web: use localhost ou 127.0.0.1
 // Para dispositivo móvel na mesma rede: use o IP da sua máquina (ex: http://192.168.0.7:5000/api)
+// Para usar tunnel (ngrok): defina EXPO_PUBLIC_API_URL com a URL do tunnel (ex: https://xxxx.ngrok.io/api)
+// OU atualize TUNNEL_URL diretamente abaixo com a URL do ngrok
+const TUNNEL_URL = process.env.EXPO_PUBLIC_API_URL || 'https://penetrative-cayson-geitonogamous.ngrok-free.dev/api'; // URL do tunnel (ngrok) se disponível
 export const API_BASE_URL = __DEV__ 
-  ? (isWeb ? 'http://localhost:5000/api' : 'http://192.168.0.7:5000/api')  // Desenvolvimento
+  ? (TUNNEL_URL 
+      ? `${TUNNEL_URL}` // Usar tunnel se disponível
+      : (isWeb ? 'http://localhost:5000/api' : 'http://192.168.0.7:5000/api'))  // Desenvolvimento local
   : 'https://your-api-url.com/api';  // Produção (ajustar quando necessário)
 
 export interface DetectChordResponse {
@@ -261,6 +266,108 @@ export async function healthCheck(): Promise<boolean> {
   } catch (error) {
     console.error('Erro ao verificar saúde da API:', error);
     return false;
+  }
+}
+
+/**
+ * Interface para resposta da API do Cifra Club
+ */
+export interface CifraClubResponse {
+  name: string;
+  artist: string;
+  cifra: string[];
+  youtube_url?: string;
+  cifraclub_url?: string;
+  error?: string;
+  message?: string;
+}
+
+/**
+ * Busca uma cifra do Cifra Club
+ */
+export async function getCifra(artist: string, song: string): Promise<CifraClubResponse> {
+  const artistNormalized = encodeURIComponent(artist.toLowerCase().trim());
+  const songNormalized = encodeURIComponent(song.toLowerCase().trim());
+  const url = `${API_BASE_URL}/cifra/${artistNormalized}/${songNormalized}`;
+  
+  console.log('🔍 [getCifra] Buscando cifra:', url);
+  console.log('📝 [getCifra] Artista:', artist, '| Música:', song);
+  console.log('🌐 [getCifra] API_BASE_URL:', API_BASE_URL);
+  console.log('🔗 [getCifra] URL completa:', url);
+  
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    console.log('📥 [getCifra] Resposta recebida:', response.status, response.statusText);
+    console.log('📥 [getCifra] Response OK:', response.ok);
+
+    if (!response.ok) {
+      let errorData;
+      try {
+        errorData = await response.json();
+        console.error('❌ [getCifra] Erro na resposta (JSON):', errorData);
+      } catch (parseError) {
+        const textError = await response.text().catch(() => 'Erro ao ler resposta');
+        console.error('❌ [getCifra] Erro na resposta (texto):', textError);
+        errorData = { 
+          error: `Erro ${response.status}: ${response.statusText}`,
+          message: textError || 'Erro desconhecido'
+        };
+      }
+      
+      return {
+        name: song,
+        artist: artist,
+        cifra: [],
+        error: errorData.error || errorData.message || `Erro ${response.status}: ${response.statusText}`,
+      };
+    }
+
+    const data = await response.json();
+    console.log('✅ [getCifra] Cifra recebida:', data.name, '-', data.artist);
+    console.log('📄 [getCifra] Tamanho da cifra:', data.cifra?.length || 0, 'linhas');
+    console.log('📄 [getCifra] Tem erro?', !!data.error);
+    
+    if (data.error) {
+      console.error('⚠️ [getCifra] Resposta contém erro:', data.error);
+    }
+    
+    return data;
+  } catch (error) {
+    console.error('❌ [getCifra] Erro ao buscar cifra:', error);
+    console.error('❌ [getCifra] Tipo do erro:', error instanceof Error ? error.constructor.name : typeof error);
+    console.error('❌ [getCifra] Mensagem do erro:', error instanceof Error ? error.message : String(error));
+    
+    if (error instanceof TypeError && error.message.includes('fetch')) {
+      console.error('🌐 [getCifra] Erro de conexão detectado');
+      return {
+        name: song,
+        artist: artist,
+        cifra: [],
+        error: `Erro de conexão: Não foi possível conectar ao servidor em ${API_BASE_URL.replace('/api', '')}. Verifique se o backend está rodando e acessível.`,
+      };
+    }
+    
+    if (error instanceof Error) {
+      return {
+        name: song,
+        artist: artist,
+        cifra: [],
+        error: `Erro: ${error.message}`,
+      };
+    }
+    
+    return {
+      name: song,
+      artist: artist,
+      cifra: [],
+      error: 'Erro desconhecido ao buscar cifra. Verifique a conexão e se o backend está rodando.',
+    };
   }
 }
 

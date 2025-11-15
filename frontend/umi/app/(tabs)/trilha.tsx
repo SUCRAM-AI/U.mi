@@ -1,8 +1,9 @@
-import React from 'react';
-import { StyleSheet, View, Text, Image, ScrollView, Platform, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, View, Text, Image, ScrollView, Platform, TouchableOpacity, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@contexts/AuthContext';
+import SettingsModal from '@components/settings-modal';
 
 
 // Recursos SVG (Importados como Componentes)
@@ -18,9 +19,8 @@ import IconeHarmonia from '@assets/images/harmonia.svg';
 import IconeCadeadoHarmonia from '@assets/images/cadeadocinza.svg'; // Usado no círculo de harmonia
 import IconeProgresso from '@assets/images/progresso.svg'; // Lição 3
 import IconeBloqueio from '@assets/images/cadeadobranco.svg'; 
-import MenuIcon from '@assets/images/config.svg'; // Menu Header
-import IconeConfig from '@assets/images/people.svg'; // Config Header
-import Iconeloja from '@assets/images/loja.svg';
+import MenuIcon from '@assets/images/people.svg'; // Menu Header
+import IconeConfig from '@assets/images/config.svg'; // Config Header
 import IconeNotas from '@assets/images/icongray.svg';
 import Perfilp from '@assets/images/perfilp.svg';
 import TrilhaIcon from '@assets/images/trilhateorica.svg'; 
@@ -28,36 +28,67 @@ import BottomNav from '@components/ui/bottom-nav';
 
 const TrilhaTeoria = () => {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const [settingsVisible, setSettingsVisible] = useState(false);
   
   const progressPercentage = user ? (user.lessonsCompleted / 5) * 100 : 0;
+
+  const handleSettingsPress = () => {
+    setSettingsVisible(true);
+  };
+
+  const handleCloseSettings = () => {
+    setSettingsVisible(false);
+  };
+
+  const handleAbout = () => {
+    setSettingsVisible(false);
+    Alert.alert('Sobre', 'U.Mi - Aplicativo de aprendizado musical');
+  };
+
+  const handleLogout = async () => {
+    setSettingsVisible(false);
+    await logout();
+    router.replace('/login');
+  };
   
-  const handleLessonClick = (lessonNumber: number) => {
-    // Mapear número da lição para ID do formato section.unit
-    // Lição 1 = 1.1, Lição 2 = 1.2, etc.
-    // Por enquanto, usar as lições antigas para compatibilidade
-    if (lessonNumber <= 3) {
-      router.push('/(tabs)/licao');
-    } else {
-      // Usar o novo sistema de lições
-      const lessonId = `1.${lessonNumber}`;
-      router.push(`/lesson/${lessonId}`);
+  // Determinar o estado de cada seção baseado no progresso
+  // Por enquanto, apenas a seção 1 está disponível (em progresso)
+  const getSectionStatus = (sectionNumber: number) => {
+    // TODO: Implementar lógica baseada no progresso real do usuário
+    // Por enquanto:
+    // - Seção 1: em progresso (disponível)
+    // - Seções 2-5: bloqueadas até a seção anterior ser concluída
+    if (sectionNumber === 1) {
+      return 'in_progress'; // Em progresso
     }
+    // Verificar se a seção anterior foi concluída
+    // Por enquanto, todas as outras estão bloqueadas
+    return 'locked'; // Bloqueada
+  };
+
+  const handleSectionClick = (sectionNumber: number) => {
+    const status = getSectionStatus(sectionNumber);
+    if (status === 'locked') {
+      return; // Não fazer nada se estiver bloqueada
+    }
+    // Navegar para a página da seção correspondente
+    router.push(`/sections/${sectionNumber}` as any);
   };
   
   return (
     <View style={styles.trilha}>
       {/* Header Fixo */}
       <View style={styles.header}>
-        <View style={styles.button2}>
+        <TouchableOpacity style={styles.button2} onPress={handleSettingsPress}>
           <View style={styles.headerIconContainer}>
-            <MenuIcon width={45} height={45} style={styles.headerIcon} />
+            <IconeConfig width={32} height={32} style={styles.headerIcon} />
           </View>
-        </View>
+        </TouchableOpacity>
         <Text style={styles.trilhaTeoria}>Trilha Teórica</Text>
         <View style={styles.button3}>
           <View style={styles.headerIconContainer}>
-            <IconeConfig width={32} height={32} style={styles.headerIcon} />
+            <MenuIcon width={32} height={32} style={styles.headerIcon} />
           </View>
         </View>
       </View>
@@ -75,13 +106,13 @@ const TrilhaTeoria = () => {
             {/* Bloco de Progresso */}
             <View style={styles.background}>
               <MascoteProgresso
-                width={120}
-                height={130}
+                width={100}
+                height={110}
                 style={styles.unnamedRemovebgPreview1}
               />
               <View style={styles.progressTextContainer}>
                 <Text style={styles.seuProgresso45}>
-                  Seu Progresso: {Math.round(progressPercentage)}%
+                  Seu Progresso: 0%
                 </Text>
                 <Text style={styles.cadaLicaoUmPassoEmDirecaoMaestria}>
                   Cada lição é um passo em direção à maestria!
@@ -91,109 +122,108 @@ const TrilhaTeoria = () => {
 
             {/* Container da Trilha de Lições */}
             <View style={styles.container2}>
-              {/* Linha da Trilha */}
-              <LinhaDaTrilha width={80} height={'100%'} style={styles.svg}preserveAspectRatio="none" />
+              {/* Linha da Trilha - Parte 1: do meio da bola 1 até o meio da bola 3 */}
+              <LinhaDaTrilha width={80} height={424} style={styles.svg1} preserveAspectRatio="none" />
+              {/* Linha da Trilha - Parte 2: do meio da bola 3 até o final */}
+              <LinhaDaTrilha width={80} height={424} style={styles.svg2} preserveAspectRatio="none" />
 
-              {/* Lição 1: Notas Musicais (Concluída Cor Verde) */}
-              <TouchableOpacity onPress={() => handleLessonClick(1)}>
+              {/* Lição 1: Fundamentos Físicos (Em Progresso Cor Laranja) */}
+              <TouchableOpacity onPress={() => handleSectionClick(1)}>
                 <LinearGradient
-                  colors={['rgba(74, 222, 128, 1)', 'rgba(16, 185, 129, 1)']}
+                  colors={['rgba(251, 191, 36, 1)', 'rgba(249, 115, 22, 1)']}
                   start={{ x: 0.0, y: 0.0 }}
                   end={{ x: 1.0, y: 1.0 }}
                   style={[styles.lessonCircle, styles.pos1]}>
                   <IconeNota width={48} height={58} style={styles.icon} />
                 </LinearGradient>
               </TouchableOpacity>
-              <Text style={[styles.lessonText, styles.pos1Text]}>Notas Musicais</Text>
-              <View style={[styles.lessonRect, styles.pos1Rect]} />
+              <Text style={[styles.lessonText, styles.pos1Text, { color: '#f97316' }]}>Fundamentos Físicos</Text>
+              <Text style={[styles.pos1SubText]}>Em Progresso</Text>
 
-              {/* Badges de Conclusão para Lição 1 */}
-              <BadgeEstrela width={24} height={24} style={[styles.badgeIcon, styles.pos1Badge1]} />
-              <BadgeEstrela width={24} height={24} style={[styles.badgeIcon, styles.pos1Badge2]} />
-              <BadgeEstrela width={24} height={24} style={[styles.badgeIcon, styles.pos1Badge3]} />
-
-
-              {/* Lição 2: Intervalos (Concluída  Cor Verde) */}
-              <TouchableOpacity onPress={() => handleLessonClick(2)}>
-                <LinearGradient
-                  colors={['rgba(74, 222, 128, 1)', 'rgba(16, 185, 129, 1)']}
-                  start={{ x: 0.0, y: 0.0 }}
-                  end={{ x: 1.0, y: 1.0 }}
-                  style={[styles.lessonCircle, styles.pos2]}>
-                  <IconeIntervalos width={48} height={58} style={styles.icon} />
-                </LinearGradient>
-              </TouchableOpacity>
-              <Text style={[styles.lessonText, styles.pos2Text]}>Intervalos</Text>
-              <View style={[styles.lessonRect, styles.pos2Rect]} />
-
-              {/* Badges de Conclusão para Lição 2 */}
-              <BadgeEstrela width={24} height={24} style={[styles.badgeIcon, styles.pos2Badge1]} />
-              <BadgeEstrela width={24} height={24} style={[styles.badgeIcon, styles.pos2Badge2]} />
-              <BadgeEstrela width={24} height={24} style={[styles.badgeIcon, styles.pos2Badge3]} />
-
-
-              {/* Lição 3: Escolas Maiores (Em Progresso Cor Laranja) */}
-              <TouchableOpacity onPress={() => handleLessonClick(3)}>
-                <LinearGradient
-                  colors={['rgba(251, 191, 36, 1)', 'rgba(249, 115, 22, 1)']}
-                  start={{ x: 0.0, y: 0.0 }}
-                  end={{ x: 1.0, y: 1.0 }}
-                  style={[styles.lessonCircle, styles.pos3]}>
-                  <IconeEscalas width={48} height={58} style={styles.icon} />
-                </LinearGradient>
-              </TouchableOpacity>
-              <Text style={[styles.lessonText, styles.pos3Text]}>Escolas Maiores</Text>
-              <Text style={[styles.pos3SubText]}>Avaliando</Text>
-              <View style={[styles.lessonRect, styles.pos3Rect]} />
-
-              {/* Ícone de Progresso/Status */}
-              <View style={[styles.pos3Badge]}>
+              {/* Ícone de Progresso/Status para Lição 1 */}
+              <LinearGradient
+                colors={['rgba(16, 185, 129, 1)', 'rgba(255, 255, 255, 1)']}
+                start={{ x: 0.0, y: 0.0 }}
+                end={{ x: 1.0, y: 1.0 }}
+                style={[styles.pos1Badge]}>
                 <IconeProgresso width={16} height={16} style={styles.icon18} />
-              </View>
+              </LinearGradient>
 
-              {/* Lição 4: Acordes Básicos (Fechada Cinza Opaco) */}
+
+              {/* Lição 2: Base Harmônica (Bloqueada Cinza Opaco) */}
+              <View style={[styles.backgroundShadow7, styles.pos2]}>
+                <IconeIntervalos width={48} height={58} style={styles.icon} />
+                <View style={styles.backgroundShadow8}>
+                  <IconeCadeadoCinza width={30} height={36} />
+                </View>
+              </View>
+              <Text style={[styles.lessonText, styles.pos2Text]}>Base Harmônica</Text>
+              <Text style={[styles.pos2SubText]}>Fechado</Text>
+
+
+              {/* Lição 3: O Motor Rítmico (Bloqueada Cinza Opaco) */}
+              <View style={[styles.backgroundShadow7, styles.pos3]}>
+                <IconeEscalas width={48} height={58} style={styles.icon} />
+                <View style={styles.backgroundShadow8}>
+                  <IconeCadeadoCinza width={30} height={36} />
+                </View>
+              </View>
+              <Text style={[styles.lessonText, styles.pos3Text]}>O Motor Rítmico</Text>
+              <Text style={[styles.pos3SubText]}>Fechado</Text>
+
+              {/* Lição 4: Gigantes do PoP (Fechada Cinza Opaco) */}
               <View style={[styles.backgroundShadow7, styles.pos4]}>
                 <IconeAcordes width={48} height={58} style={styles.icon} />
                 <View style={styles.backgroundShadow8}>
                   <IconeCadeadoCinza width={30} height={36} />
                 </View>
               </View>
-              <Text style={[styles.lessonText, styles.pos4Text]}>Acordes Básicos</Text>
+              <Text style={[styles.lessonText, styles.pos4Text]}>Gigantes do PoP</Text>
               <Text style={[styles.pos4SubText]}>Fechado</Text>
 
 
-              {/* Lição 5: Harmonia (Fechada Cinza Opaco) */}
-              <View style={[styles.backgroundShadow9, styles.pos5]}>
+              {/* Lição 5: Consolidar (Fechada Cinza Opaco) */}
+              <View style={[styles.backgroundShadow7, styles.pos5]}>
                 <IconeHarmonia width={48} height={58} style={styles.icon} />
                 <View style={styles.backgroundShadow8}>
                   <IconeCadeadoHarmonia width={30} height={36} />
                 </View>
               </View>
-              <Text style={[styles.lessonText, styles.pos5Text]}>Harmonia</Text>
+              <Text style={[styles.lessonText, styles.pos5Text]}>Consolidar</Text>
               <Text style={[styles.pos5SubText]}>Fechado</Text>
 
             </View>
 
             {/* Bloco Modo Música */}
             <View style={styles.modoMusicaContainer}>
-              <LinearGradient
-                colors={['rgba(147, 51, 234, 1)', 'rgba(192, 132, 252, 1)']}
-                start={{ x: 0.0, y: 0.0 }}
-                end={{ x: 1.0, y: 1.0 }}
-                style={styles.button}>
-                <Text style={styles.modoMusica}>Modo Música</Text>
-                {/* Overlay de Bloqueio */}
-                <View style={styles.overlayOverlayBlur}>
-                  <IconeBloqueio width={36} height={36} style={styles.icon20} />
-                  <Text style={styles._70ModoMusica}>70% → Modo Música.</Text>
-                </View>
-              </LinearGradient>
+              <TouchableOpacity onPress={() => router.push('/(tabs)/musica')}>
+                <LinearGradient
+                  colors={['rgba(147, 51, 234, 1)', 'rgba(192, 132, 252, 1)']}
+                  start={{ x: 0.0, y: 0.0 }}
+                  end={{ x: 1.0, y: 1.0 }}
+                  style={styles.button}>
+                  <Text style={styles.modoMusica}>Modo Música</Text>
+                  {/* Overlay de Bloqueio */}
+                  <View style={styles.overlayOverlayBlur}>
+                    <IconeBloqueio width={36} height={36} style={styles.icon20} />
+                    <Text style={styles._70ModoMusica}>70% → Modo Música.</Text>
+                  </View>
+                </LinearGradient>
+              </TouchableOpacity>
             </View>
           </View>
         </View>
       </ScrollView>
   {/* Bottom navigation */}
-  <BottomNav TrilhaIcon={TrilhaIcon} IconeNotas={IconeNotas} Iconeloja={Iconeloja} Perfilp={Perfilp} />
+  <BottomNav TrilhaIcon={TrilhaIcon} IconeNotas={IconeNotas} Perfilp={Perfilp} />
+      
+      {/* Settings Modal */}
+      <SettingsModal
+        visible={settingsVisible}
+        onClose={handleCloseSettings}
+        onPressAbout={handleAbout}
+        onPressLogout={handleLogout}
+      />
     </View>
   );
 };
@@ -205,7 +235,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fbfaff',
   },
   scrollContent: {
-    paddingBottom: 400,
+    paddingBottom: 95, // Espaço após o botão do modo música
     flexGrow: 1,
   },
   container: {
@@ -307,12 +337,11 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
   unnamedRemovebgPreview1: {
-    width: 72,
-    height: 78,
+    width: 100,
+    height: 110,
     resizeMode: 'contain',
     flexShrink: 0,
-    transform: [{ scaleX: -1 }],
-    marginLeft: -20,
+    marginLeft: 0,
   },
 
   // Container da Trilha
@@ -324,16 +353,25 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     width: '100%',
     justifyContent: 'flex-start',
-    paddingBottom: 50, // Espaço no final do container
+    paddingBottom: 0, // Sem espaço extra após o botão do modo música
   },
-  svg: {
+  svg1: {
     width: 80,
-    height: '100%',
+    height: 424, // Do meio da bola 1 (40px) até o meio da bola 3 (464px) = 424px
     position: 'absolute',
     left: '50%',
     marginLeft: -45, // Centraliza a linha 
-    top: 0, // Inicia no início (topo) da primeira bola
-    resizeMode: 'stretch', // Para esticar a linha verticalmente
+    top: 40, // Inicia no meio da primeira bola (0 + 40)
+    resizeMode: 'stretch',
+  },
+  svg2: {
+    width: 80,
+    height: 424, // Do meio da bola 3 (464px) até aproximadamente o meio da bola 5 (888px) = 424px
+    position: 'absolute',
+    left: '50%',
+    marginLeft: -45, // Centraliza a linha 
+    top: 464, // Inicia no meio da terceira bola (424 + 40)
+    resizeMode: 'stretch',
   },
 
   // --- Estilos Comuns de Lições ---
@@ -409,21 +447,17 @@ const styles = StyleSheet.create({
   },
   pos1: { top: 0, left: '50%', marginLeft: -40, alignSelf: 'center' },
   pos1Text: { top: 88, left: '50%', marginLeft: -75, textAlign: 'center', zIndex: 10, alignSelf: 'center' },
+  pos1SubText: { position: 'absolute', top: 135, left: '50%', marginLeft: -75, color: '#6b7280', fontSize: 14, fontWeight: '500', width: 150, textAlign: 'center', zIndex: 10, alignSelf: 'center' },
   pos1Rect: { top: 91, left: '50%', marginLeft: -68, width: 136 },
-  pos1Badge1: { 
-    position: 'absolute',
-    top: 58, 
-    right: 114 
-  },
-  pos1Badge2: { 
-    position: 'absolute',
-    top: 58, 
-    right: 94 
-  },
-  pos1Badge3: { 
-    position: 'absolute',
-    top: 58, 
-    right: 134 
+  pos1Badge: { 
+    width: 20, 
+    height: 20, 
+    borderRadius: 9999, 
+    position: 'absolute', 
+    top: 57, 
+    right: 140,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 
   // Lição 2: Intervalos
@@ -442,23 +476,22 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent' 
   },
   pos2: { top: 212, left: '50%', marginLeft: -40, alignSelf: 'center' },
-  pos2Text: { top: 300, left: '50%', marginLeft: -47.5, width: 95, textAlign: 'center', zIndex: 10, alignSelf: 'center' },
+  pos2Text: { 
+    color: '#4a4a68',
+    fontFamily: 'Lexend-SemiBold',
+    fontSize: 16,
+    fontWeight: '600',
+    position: 'absolute',
+    textAlign: 'center',
+    width: 138,
+    opacity: 0.6,
+    top: 300, 
+    left: '50%', 
+    marginLeft: -69,
+    alignSelf: 'center'
+  },
+  pos2SubText: { position: 'absolute', top: 324, left: '50%', marginLeft: -69, color: '#6b7280', opacity: 0.6, fontSize: 14, fontWeight: '500', width: 138, textAlign: 'center', zIndex: 10, alignSelf: 'center' },
   pos2Rect: { top: 303, left: '50%', marginLeft: -46.5, width: 93 },
-  pos2Badge1: { 
-    position: 'absolute',
-    top: 272, 
-    right: 112 
-  },
-  pos2Badge2: { 
-    position: 'absolute',
-    top: 272, 
-    right: 92 
-  },
-  pos2Badge3: { 
-    position: 'absolute',
-    top: 272, 
-    right: 134 
-  },
 
   // Lição 3: Escolas Maiores (Em Progresso)
   backgroundShadow5: { 
@@ -477,31 +510,21 @@ const styles = StyleSheet.create({
   },
   pos3: { top: 424, left: '50%', marginLeft: -40, alignSelf: 'center' },
   pos3Text: { 
-    color: '#f97316',
+    color: '#4a4a68',
     fontFamily: 'Lexend-SemiBold',
     fontSize: 16,
     fontWeight: '600',
     position: 'absolute',
     textAlign: 'center',
     width: 139,
+    opacity: 0.6,
     top: 514, 
     left: '50%', 
     marginLeft: -69.5,
     alignSelf: 'center'
   },
-  pos3SubText: { position: 'absolute', top: 536, left: '50%', marginLeft: -69.5, color: '#6b7280', fontSize: 14, fontWeight: '500', width: 139, textAlign: 'center', zIndex: 10, alignSelf: 'center' },
+  pos3SubText: { position: 'absolute', top: 536, left: '50%', marginLeft: -69.5, color: '#6b7280', opacity: 0.6, fontSize: 14, fontWeight: '500', width: 139, textAlign: 'center', zIndex: 10, alignSelf: 'center' },
   pos3Rect: { top: 517, left: '50%', marginLeft: -68, width: 136 },
-  pos3Badge: { 
-    width: 20, 
-    height: 20, 
-    borderRadius: 9999, 
-    backgroundColor: '#000000', 
-    position: 'absolute', 
-    top: 481, 
-    right: 140,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
 
   // Lição 4: Acordes Básicos (Fechada)
   backgroundShadow7: { 
@@ -516,8 +539,7 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 5,
     position: 'absolute',
-    backgroundColor: '#cbd5e1', 
-    opacity: 0.6 
+    backgroundColor: '#cbd5e1'
   },
   backgroundShadow8: { 
     width: 40, 
@@ -562,8 +584,7 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 5,
     position: 'absolute',
-    backgroundColor: '#cbd5e1', 
-    opacity: 0.6 
+    backgroundColor: '#cbd5e1'
   },
   pos5: { top: 848, left: '50%', marginLeft: -40, alignSelf: 'center' },
   pos5Text: { 
@@ -586,7 +607,7 @@ const styles = StyleSheet.create({
   modoMusicaContainer: {
     width: '100%',
     marginTop: 450,
-    marginBottom: 50,
+    marginBottom: 0,
     paddingHorizontal: 16,
     alignSelf: 'stretch',
   },
@@ -633,7 +654,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  icon20: { width: 36, height: 44, position: 'absolute', top: 10, resizeMode: 'contain' },
+  icon20: { width: 36, height: 44, position: 'absolute', top: 5, resizeMode: 'contain' },
   _70ModoMusica: {
     color: '#ffffff',
     fontFamily: 'Lexend-SemiBold', 

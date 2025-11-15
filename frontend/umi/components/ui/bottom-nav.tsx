@@ -8,12 +8,10 @@ type IconComponent = React.ComponentType<any> | undefined;
 export default function BottomNav({
   TrilhaIcon,
   IconeNotas,
-  Iconeloja,
   Perfilp,
 }: {
   TrilhaIcon?: IconComponent;
   IconeNotas?: IconComponent;
-  Iconeloja?: IconComponent;
   Perfilp?: IconComponent;
 }) {
   const router = useRouter();
@@ -52,7 +50,7 @@ export default function BottomNav({
         </TouchableOpacity>
 
         <TouchableOpacity 
-          style={styles.link2}
+          style={styles.link}
           onPress={() => router.push('/(tabs)/musica')}
         >
           {IconeNotas ? (
@@ -68,23 +66,7 @@ export default function BottomNav({
         </TouchableOpacity>
 
         <TouchableOpacity 
-          style={styles.link3}
-          onPress={() => router.push('/(tabs)/loja')}
-        >
-          {Iconeloja ? (
-            <Iconeloja 
-              width={24} 
-              height={28} 
-              style={getNavIconStyle('/loja')} 
-            />
-          ) : (
-            <Text>🛒</Text>
-          )}
-          <Text style={getNavTextStyle('/loja')}>Loja</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity 
-          style={styles.link4}
+          style={styles.link}
           onPress={() => router.push('/(tabs)/perfil')}
         >
           {Perfilp ? (
@@ -118,15 +100,19 @@ const styles = StyleSheet.create({
   },
   container3: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'center',
+    alignItems: 'center',
     width: '100%',
-    paddingHorizontal: 10,
+    paddingHorizontal: 20,
+    gap: 60,
     opacity: 1,
   },
-  link: { alignItems: 'center', width: 80 },
-  link2: { alignItems: 'center', width: 50 },
-  link3: { alignItems: 'center', width: 65 },
-  link4: { alignItems: 'center', width: 55 },
+  link: { 
+    alignItems: 'center', 
+    justifyContent: 'center',
+    flex: 0,
+    minWidth: 90,
+  },
   navIconStyle: { marginBottom: 4, color: 'rgba(51, 51, 51, 0.7)' },
   activeIcon: { color: '#7C3AED' },
   navText: { color: 'rgba(51, 51, 51, 0.7)', fontSize: 12, fontWeight: '500' },

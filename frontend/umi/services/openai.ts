@@ -62,7 +62,7 @@ export async function getChatbotResponse(
     
     // Mensagens de erro mais específicas
     if (error instanceof TypeError && error.message.includes('fetch')) {
-      throw new Error('Não foi possível conectar ao servidor. Verifique se o backend está rodando em http://localhost:5000');
+      throw new Error(`Não foi possível conectar ao servidor. Verifique se o backend está rodando em ${API_BASE_URL.replace('/api', '')}`);
     }
     
     throw error;

@@ -13,7 +13,6 @@ import {
 import MenuIcon from '@assets/images/config.svg';
 import IconeConfig from '@assets/images/people.svg';
 import IconeNotas from '@assets/images/icongray.svg';
-import Iconeloja from '@assets/images/loja.svg';
 import Perfilp from '@assets/images/perfilp.svg';
 import TrilhaIcon from '@assets/images/trilhateorica.svg';
 import BottomNav from '@components/ui/bottom-nav';
@@ -49,7 +48,6 @@ export default function Loja() {
       <BottomNav
         TrilhaIcon={TrilhaIcon}
         IconeNotas={IconeNotas}
-        Iconeloja={Iconeloja}
         Perfilp={Perfilp}
       />
     </View>

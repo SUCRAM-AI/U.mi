@@ -7,7 +7,6 @@ import MenuIcon from '@assets/images/config.svg'; // Menu Header (Configuraçõe
 import IconeConfig from '@assets/images/people.svg'; // Config Header (Amigos/Voltar)
 import IconeCadeadoCinza from '@assets/images/cadeadocinza.svg'; // Cadeado para conquistas bloqueadas
 import IconeNotas from '@assets/images/icongray.svg'; // para 'Música' na navegação
-import Iconeloja from '@assets/images/loja.svg'; // para 'Loja' na navegação
 import Perfilp from '@assets/images/perfilp.svg';// para 'Perfil' na navegação
 import TrilhaIcon from '@assets/images/trilhateorica.svg'; // para 'Trilha' na navegação
 import BottomNav from '@components/ui/bottom-nav';
@@ -148,7 +147,6 @@ const Perfil = () => {
                 <BottomNav
                     TrilhaIcon={TrilhaIcon}
                     IconeNotas={IconeNotas}
-                    Iconeloja={Iconeloja}
                     Perfilp={Perfilp}
                 />
       </View>
